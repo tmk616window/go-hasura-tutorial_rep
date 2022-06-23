@@ -1,0 +1,50 @@
+version: "3"
+
+networks:
+  internal-api-test:
+    external: true
+
+services:
+  api_test:
+    container_name: api_test
+    # command: "go run server.go"
+    build: ./api_test
+    tty: true
+    volumes:
+      - ./api_test:/go/api_test
+    depends_on:
+      - postgresql_test
+    ports:
+      - 8080:8080
+    networks:
+      - internal-api-test
+
+  postgresql_test:
+    platform: linux/amd64
+    image: postgres:13
+    volumes:
+      - ./postgresql/initdb.d:/docker-entrypoint-initdb.d
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5432:5432"
+    networks:
+      - internal-api-test
+
+  hasura:
+    image: hasura/graphql-engine:v2.8.0.cli-migrations-v3
+    depends_on:
+      - "postgresql_test"
+    restart: on-failure:10
+    environment:
+      HASURA_GRAPHQL_DATABASE_URL: postgres://user:password@postgresql_test:5432/test_db
+      # `make console` により起動する管理画面からのみ操作を行うため、下記は false に
+      HASURA_GRAPHQL_ENABLE_CONSOLE: "false"
+      HASURA_GRAPHQL_DEV_MODE: "true"
+      HASURA_REMOTE_SCHEMA_ENDPOINT: http://api_test:8080/query
+      HASURA_GRAPHQL_ENABLE_REMOTE_SCHEMA_PERMISSIONS: "true"
+    ports:
+      - "3000:8080"
+    networks:
+      - internal-api-test
