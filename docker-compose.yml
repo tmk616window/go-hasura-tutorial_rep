@@ -22,9 +22,8 @@ services:
   postgresql_test:
     platform: linux/amd64
     image: postgres:13
-    volumes:
-      - ./postgresql/initdb.d:/docker-entrypoint-initdb.d
     environment:
+      POSTGRES_DB: test_db
       POSTGRES_USER: user
       POSTGRES_PASSWORD: password
     ports:
