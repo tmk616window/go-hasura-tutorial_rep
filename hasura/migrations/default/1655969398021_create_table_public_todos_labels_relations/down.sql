@@ -1,1 +1,1 @@
-DROP TABLE "public"."todos_labels_relations";
+DROP TABLE "public"."todo_labels";

@@ -2,5 +2,5 @@
 - "!include public_priorities.yaml"
 - "!include public_statuses.yaml"
 - "!include public_todos.yaml"
-- "!include public_todos_labels_relations.yaml"
+- "!include public_todo_labels.yaml"
 - "!include public_users.yaml"
