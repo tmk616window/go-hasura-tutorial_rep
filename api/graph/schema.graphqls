@@ -4,8 +4,12 @@
 
 type Todo {
   id: ID!
-  text: String!
-  done: Boolean!
+  title: String!
+  description: String
+  user_id: Int!
+  status_id: Int!
+  priority_id: Int!
+  finished_at String!
   user: User!
 }
 
@@ -14,14 +18,31 @@ type User {
   name: String!
 }
 
+type Status {
+  id: ID!
+  name: String!
+}
+
+type Priory {
+  id: ID!
+  name: String!
+}
+
+type Labels {
+  id: ID!
+  name: String!
+}
+
+type Todo_label {
+  id: ID!
+  todo_id: Int!
+  label_id: int!
+}
+
 type Query {
   todos: [Todo!]!
 }
 
-input NewTodo {
-  text: String!
-  userId: String!
-}
 
 type Mutation {
   createTodo(input: NewTodo!): Todo!
