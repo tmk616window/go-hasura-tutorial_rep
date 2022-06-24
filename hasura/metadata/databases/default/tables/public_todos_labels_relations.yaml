@@ -1,0 +1,3 @@
+table:
+  schema: public
+  name: todos_labels_relations
