@@ -1,17 +1,15 @@
-
-
 # go_hasura_tutorial
 
 ## setting and local development
 
 - docker for mac setting
-
+- docker for mac hasura cli
 ## 以下のコマンドでローカル環境を作成する
 
 ```
-$ git clone https://github.com/tmk616window/react-rails.git
-$ cd ~/Desktop/go_hasura_tutorial
-$ docker network create internal-api-test
+$ git clone https://github.com/tmk616window/go_hasura_tutorial.git
+$ cd go_hasura_tutorial
+$ docker network create internal-api
 $ docker-compose build
 $ docker-compose up -d
 $ cd hasura
