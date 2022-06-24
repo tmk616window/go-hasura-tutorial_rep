@@ -1,3 +1,11 @@
 table:
   schema: public
   name: labels
+array_relationships:
+  - name: todos_labels_relations
+    using:
+      foreign_key_constraint_on:
+        column: label_id
+        table:
+          schema: public
+          name: todos_labels_relations
