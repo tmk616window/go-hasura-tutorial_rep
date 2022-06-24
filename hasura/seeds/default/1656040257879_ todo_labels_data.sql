@@ -1,4 +1,4 @@
-insert into todos_labels_relations
+insert into todo_labels
   (id, todo_id, label_id) 
 values 
   (1, 1, 1),
