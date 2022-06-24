@@ -3,7 +3,7 @@
 ## setting and local development
 
 - docker for mac setting
-- docker for mac hasura cli
+- hasura cli
 ## 以下のコマンドでローカル環境を作成する
 
 ```
