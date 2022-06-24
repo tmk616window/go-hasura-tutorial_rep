@@ -9,7 +9,7 @@ type Todo {
   user_id: Int!
   status_id: Int!
   priority_id: Int!
-  finished_at String!
+  finished_at: String!
   user: User!
 }
 
@@ -36,13 +36,17 @@ type Labels {
 type Todo_label {
   id: ID!
   todo_id: Int!
-  label_id: int!
+  label_id: Int!
+}
+
+input NewTodo {
+  title: String!
+  description: String
 }
 
 type Query {
   todos: [Todo!]!
 }
-
 
 type Mutation {
   createTodo(input: NewTodo!): Todo!

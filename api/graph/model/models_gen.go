@@ -2,16 +2,41 @@
 
 package model
 
+type Labels struct {
+	ID   string `json:"id"`
+	Name string `json:"name"`
+}
+
 type NewTodo struct {
-	Text   string `json:"text"`
-	UserID string `json:"userId"`
+	Title       string  `json:"title"`
+	Description *string `json:"description"`
+}
+
+type Priory struct {
+	ID   string `json:"id"`
+	Name string `json:"name"`
+}
+
+type Status struct {
+	ID   string `json:"id"`
+	Name string `json:"name"`
 }
 
 type Todo struct {
-	ID   string `json:"id"`
-	Text string `json:"text"`
-	Done bool   `json:"done"`
-	User *User  `json:"user"`
+	ID          string  `json:"id"`
+	Title       string  `json:"title"`
+	Description *string `json:"description"`
+	UserID      int     `json:"user_id"`
+	StatusID    int     `json:"status_id"`
+	PriorityID  int     `json:"priority_id"`
+	FinishedAt  string  `json:"finished_at"`
+	User        *User   `json:"user"`
+}
+
+type TodoLabel struct {
+	ID      string `json:"id"`
+	TodoID  int    `json:"todo_id"`
+	LabelID int    `json:"label_id"`
 }
 
 type User struct {
