@@ -7,7 +7,6 @@ import (
 	"api/graph/generated"
 	"api/graph/model"
 	"api/graph/models"
-	"api/postgresql"
 	"context"
 	"fmt"
 )
@@ -90,21 +89,3 @@ type todoLabelResolver struct{ *Resolver }
 //  - When renaming or deleting a resolver the old code will be put in here. You can safely delete
 //    it when you're done.
 //  - You have helper methods in this file. Move them out to keep these resolver files clean.
-func (r *queryResolver) Users(ctx context.Context, column string, value string) ([]*model.User, error) {
-	panic(fmt.Errorf("not implemented"))
-}
-func (r *queryResolver) SortTodos(ctx context.Context, column string, value string) ([]*models.Todo, error) {
-	var sortTodos []*models.Todo
-	db := postgresql.DBConnect()
-	db.Order(column + " " + value).Find(&sortTodos)
-	return sortTodos, nil
-}
-func (r *todoResolver) Labels(ctx context.Context, obj *models.Todo) ([]*model.Label, error) {
-	panic(fmt.Errorf("not implemented"))
-}
-func (r *todoResolver) PriorityID(ctx context.Context, obj *models.Todo) (int, error) {
-	panic(fmt.Errorf("not implemented"))
-}
-func (r *todoResolver) StatusID(ctx context.Context, obj *models.Todo) (int, error) {
-	panic(fmt.Errorf("not implemented"))
-}
