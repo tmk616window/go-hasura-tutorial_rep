@@ -22,6 +22,10 @@ func main() {
 	}
 
 	db := postgresql.DBConnect()
+	if postgres, err := db.DB(); err == nil {
+		defer postgres.Close()
+	}
+
 	srv := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: &graph.Resolver{
 		DB: db,
 	}}))
