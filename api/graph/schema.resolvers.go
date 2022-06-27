@@ -30,7 +30,6 @@ func (r *queryResolver) Todos(ctx context.Context, sortInput *model.SortTodo, se
 	} else if sortInput != nil {
 		db.Preload("TodoLabels").Order(sortInput.Column + " " + string(sortInput.Sort)).Find(&todos)
 	}
-	fmt.Println(&todos)
 	return todos, nil
 }
 
@@ -42,7 +41,6 @@ func (r *todoResolver) Status(ctx context.Context, obj *models.Todo) (*model.Sta
 	var status model.Status
 	db := postgresql.DbConnect()
 	db.First(&status, obj.StatusID)
-	fmt.Println(status)
 	return &status, nil
 }
 
@@ -50,7 +48,6 @@ func (r *todoResolver) Priority(ctx context.Context, obj *models.Todo) (*model.P
 	var priority model.Priority
 	db := postgresql.DbConnect()
 	db.First(&priority, obj.PriorityID)
-	fmt.Println(priority)
 	return &priority, nil
 }
 
@@ -65,7 +62,6 @@ func (r *todoLabelResolver) Label(ctx context.Context, obj *models.TodoLabel) (*
 	var label model.Label
 	db := postgresql.DbConnect()
 	db.First(&label)
-	fmt.Println(label)
 	return &label, nil
 }
 
@@ -99,7 +95,6 @@ func (r *queryResolver) SortTodos(ctx context.Context, column string, value stri
 	var sortTodos []*models.Todo
 	db := postgresql.DbConnect()
 	db.Order(column + " " + value).Find(&sortTodos)
-	fmt.Println(&sortTodos)
 	return sortTodos, nil
 }
 func (r *todoResolver) Labels(ctx context.Context, obj *models.Todo) ([]*model.Label, error) {
