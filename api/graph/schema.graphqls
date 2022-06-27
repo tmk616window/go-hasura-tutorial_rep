@@ -11,7 +11,7 @@ type Todo {
   priorityID: Int!
   priority: Priority!
   finished_at: String!
-  todoLabels: [TodoLabel]!
+  todoLabels: [TodoLabel!]!
 }
 
 type User {
@@ -35,7 +35,6 @@ type Priority {
 type Label {
   id: ID!
   name: String!
-  # todo_labels: [Todo_label]!
 }
 
 type TodoLabel {
