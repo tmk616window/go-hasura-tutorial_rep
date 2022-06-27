@@ -3,7 +3,7 @@ scalar DateTime
 type Todo {
   id: ID!
   title: String!
-  description: String
+  description: String!
   userID: Int!
   user: User!
   statusID: Int!
