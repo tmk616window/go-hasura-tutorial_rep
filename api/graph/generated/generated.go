@@ -53,7 +53,8 @@ type ComplexityRoot struct {
 	}
 
 	Mutation struct {
-		CreateTodo func(childComplexity int, input model.NewTodo) int
+		CreateTodo      func(childComplexity int, input model.NewTodo) int
+		CreateTodoLabel func(childComplexity int, input model.NewTodo) int
 	}
 
 	Priority struct {
@@ -62,7 +63,7 @@ type ComplexityRoot struct {
 	}
 
 	Query struct {
-		Todos func(childComplexity int, sortInput *model.SortTodo, serachInput *model.SerachTodo) int
+		Todos func(childComplexity int, sortInput *model.SortTodo, searchInput *model.SearchTodo) int
 	}
 
 	Status struct {
@@ -102,9 +103,10 @@ type ComplexityRoot struct {
 
 type MutationResolver interface {
 	CreateTodo(ctx context.Context, input model.NewTodo) (*models.Todo, error)
+	CreateTodoLabel(ctx context.Context, input model.NewTodo) (*models.TodoLabel, error)
 }
 type QueryResolver interface {
-	Todos(ctx context.Context, sortInput *model.SortTodo, serachInput *model.SerachTodo) ([]*models.Todo, error)
+	Todos(ctx context.Context, sortInput *model.SortTodo, searchInput *model.SearchTodo) ([]*models.Todo, error)
 }
 type TodoResolver interface {
 	User(ctx context.Context, obj *models.Todo) (*model.User, error)
@@ -160,6 +162,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.CreateTodo(childComplexity, args["input"].(model.NewTodo)), true
 
+	case "Mutation.createTodoLabel":
+		if e.complexity.Mutation.CreateTodoLabel == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_createTodoLabel_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.CreateTodoLabel(childComplexity, args["input"].(model.NewTodo)), true
+
 	case "Priority.id":
 		if e.complexity.Priority.ID == nil {
 			break
@@ -184,7 +198,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.Todos(childComplexity, args["sortInput"].(*model.SortTodo), args["serachInput"].(*model.SerachTodo)), true
+		return e.complexity.Query.Todos(childComplexity, args["sortInput"].(*model.SortTodo), args["searchInput"].(*model.SearchTodo)), true
 
 	case "Status.id":
 		if e.complexity.Status.ID == nil {
@@ -354,7 +368,7 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 	ec := executionContext{rc, e}
 	inputUnmarshalMap := graphql.BuildUnmarshalerMap(
 		ec.unmarshalInputNewTodo,
-		ec.unmarshalInputSerachTodo,
+		ec.unmarshalInputSearchTodo,
 		ec.unmarshalInputSortTodo,
 	)
 	first := true
@@ -429,7 +443,7 @@ type Todo {
   priorityID: Int!
   priority: Priority!
   finished_at: String!
-  todoLabels: [TodoLabel]!
+  todoLabels: [TodoLabel!]!
 }
 
 type User {
@@ -453,7 +467,6 @@ type Priority {
 type Label {
   id: ID!
   name: String!
-  # todo_labels: [Todo_label]!
 }
 
 type TodoLabel {
@@ -473,17 +486,18 @@ input SortTodo {
   value: String!
 }
 
-input SerachTodo {
+input SearchTodo {
   column: String!
   value: String!
 }
 
 type Query {
-  todos(sortInput: SortTodo,serachInput: SerachTodo): [Todo!]!
+  todos(sortInput: SortTodo,searchInput: SearchTodo): [Todo!]!
 }
 
 type Mutation {
   createTodo(input: NewTodo!): Todo!
+  createTodoLabel(input: NewTodo!): TodoLabel!
 }
 `, BuiltIn: false},
 }
@@ -492,6 +506,21 @@ var parsedSchema = gqlparser.MustLoadSchema(sources...)
 // endregion ************************** generated!.gotpl **************************
 
 // region    ***************************** args.gotpl *****************************
+
+func (ec *executionContext) field_Mutation_createTodoLabel_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 model.NewTodo
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNNewTodo2apiᚋgraphᚋmodelᚐNewTodo(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
 
 func (ec *executionContext) field_Mutation_createTodo_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
@@ -535,15 +564,15 @@ func (ec *executionContext) field_Query_todos_args(ctx context.Context, rawArgs 
 		}
 	}
 	args["sortInput"] = arg0
-	var arg1 *model.SerachTodo
-	if tmp, ok := rawArgs["serachInput"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("serachInput"))
-		arg1, err = ec.unmarshalOSerachTodo2ᚖapiᚋgraphᚋmodelᚐSerachTodo(ctx, tmp)
+	var arg1 *model.SearchTodo
+	if tmp, ok := rawArgs["searchInput"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("searchInput"))
+		arg1, err = ec.unmarshalOSearchTodo2ᚖapiᚋgraphᚋmodelᚐSearchTodo(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["serachInput"] = arg1
+	args["searchInput"] = arg1
 	return args, nil
 }
 
@@ -776,6 +805,71 @@ func (ec *executionContext) fieldContext_Mutation_createTodo(ctx context.Context
 	return fc, nil
 }
 
+func (ec *executionContext) _Mutation_createTodoLabel(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_createTodoLabel(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().CreateTodoLabel(rctx, fc.Args["input"].(model.NewTodo))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*models.TodoLabel)
+	fc.Result = res
+	return ec.marshalNTodoLabel2ᚖapiᚋgraphᚋmodelsᚐTodoLabel(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_createTodoLabel(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_TodoLabel_id(ctx, field)
+			case "todoID":
+				return ec.fieldContext_TodoLabel_todoID(ctx, field)
+			case "labelID":
+				return ec.fieldContext_TodoLabel_labelID(ctx, field)
+			case "label":
+				return ec.fieldContext_TodoLabel_label(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type TodoLabel", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_createTodoLabel_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Priority_id(ctx context.Context, field graphql.CollectedField, obj *model.Priority) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Priority_id(ctx, field)
 	if err != nil {
@@ -878,7 +972,7 @@ func (ec *executionContext) _Query_todos(ctx context.Context, field graphql.Coll
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().Todos(rctx, fc.Args["sortInput"].(*model.SortTodo), fc.Args["serachInput"].(*model.SerachTodo))
+		return ec.resolvers.Query().Todos(rctx, fc.Args["sortInput"].(*model.SortTodo), fc.Args["searchInput"].(*model.SearchTodo))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1717,7 +1811,7 @@ func (ec *executionContext) _Todo_todoLabels(ctx context.Context, field graphql.
 	}
 	res := resTmp.([]*models.TodoLabel)
 	fc.Result = res
-	return ec.marshalNTodoLabel2ᚕᚖapiᚋgraphᚋmodelsᚐTodoLabel(ctx, field.Selections, res)
+	return ec.marshalNTodoLabel2ᚕᚖapiᚋgraphᚋmodelsᚐTodoLabelᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Todo_todoLabels(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -3964,8 +4058,8 @@ func (ec *executionContext) unmarshalInputNewTodo(ctx context.Context, obj inter
 	return it, nil
 }
 
-func (ec *executionContext) unmarshalInputSerachTodo(ctx context.Context, obj interface{}) (model.SerachTodo, error) {
-	var it model.SerachTodo
+func (ec *executionContext) unmarshalInputSearchTodo(ctx context.Context, obj interface{}) (model.SearchTodo, error) {
+	var it model.SearchTodo
 	asMap := map[string]interface{}{}
 	for k, v := range obj.(map[string]interface{}) {
 		asMap[k] = v
@@ -4092,6 +4186,15 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Mutation_createTodo(ctx, field)
+			})
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "createTodoLabel":
+
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_createTodoLabel(ctx, field)
 			})
 
 			if out.Values[i] == graphql.Null {
@@ -4991,7 +5094,11 @@ func (ec *executionContext) marshalNTodo2ᚖapiᚋgraphᚋmodelsᚐTodo(ctx cont
 	return ec._Todo(ctx, sel, v)
 }
 
-func (ec *executionContext) marshalNTodoLabel2ᚕᚖapiᚋgraphᚋmodelsᚐTodoLabel(ctx context.Context, sel ast.SelectionSet, v []*models.TodoLabel) graphql.Marshaler {
+func (ec *executionContext) marshalNTodoLabel2apiᚋgraphᚋmodelsᚐTodoLabel(ctx context.Context, sel ast.SelectionSet, v models.TodoLabel) graphql.Marshaler {
+	return ec._TodoLabel(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNTodoLabel2ᚕᚖapiᚋgraphᚋmodelsᚐTodoLabelᚄ(ctx context.Context, sel ast.SelectionSet, v []*models.TodoLabel) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
 	isLen1 := len(v) == 1
@@ -5015,7 +5122,7 @@ func (ec *executionContext) marshalNTodoLabel2ᚕᚖapiᚋgraphᚋmodelsᚐTodoL
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalOTodoLabel2ᚖapiᚋgraphᚋmodelsᚐTodoLabel(ctx, sel, v[i])
+			ret[i] = ec.marshalNTodoLabel2ᚖapiᚋgraphᚋmodelsᚐTodoLabel(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -5026,7 +5133,23 @@ func (ec *executionContext) marshalNTodoLabel2ᚕᚖapiᚋgraphᚋmodelsᚐTodoL
 	}
 	wg.Wait()
 
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
 	return ret
+}
+
+func (ec *executionContext) marshalNTodoLabel2ᚖapiᚋgraphᚋmodelsᚐTodoLabel(ctx context.Context, sel ast.SelectionSet, v *models.TodoLabel) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._TodoLabel(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalNUser2apiᚋgraphᚋmodelᚐUser(ctx context.Context, sel ast.SelectionSet, v model.User) graphql.Marshaler {
@@ -5322,11 +5445,11 @@ func (ec *executionContext) marshalOBoolean2ᚖbool(ctx context.Context, sel ast
 	return res
 }
 
-func (ec *executionContext) unmarshalOSerachTodo2ᚖapiᚋgraphᚋmodelᚐSerachTodo(ctx context.Context, v interface{}) (*model.SerachTodo, error) {
+func (ec *executionContext) unmarshalOSearchTodo2ᚖapiᚋgraphᚋmodelᚐSearchTodo(ctx context.Context, v interface{}) (*model.SearchTodo, error) {
 	if v == nil {
 		return nil, nil
 	}
-	res, err := ec.unmarshalInputSerachTodo(ctx, v)
+	res, err := ec.unmarshalInputSearchTodo(ctx, v)
 	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
@@ -5352,13 +5475,6 @@ func (ec *executionContext) marshalOString2ᚖstring(ctx context.Context, sel as
 	}
 	res := graphql.MarshalString(*v)
 	return res
-}
-
-func (ec *executionContext) marshalOTodoLabel2ᚖapiᚋgraphᚋmodelsᚐTodoLabel(ctx context.Context, sel ast.SelectionSet, v *models.TodoLabel) graphql.Marshaler {
-	if v == nil {
-		return graphql.Null
-	}
-	return ec._TodoLabel(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalO__EnumValue2ᚕgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐEnumValueᚄ(ctx context.Context, sel ast.SelectionSet, v []introspection.EnumValue) graphql.Marshaler {

@@ -21,7 +21,7 @@ type Priority struct {
 	Name string `json:"name"`
 }
 
-type SerachTodo struct {
+type SearchTodo struct {
 	Column string `json:"column"`
 	Value  string `json:"value"`
 }

@@ -54,15 +54,16 @@ input SortTodo {
   value: String!
 }
 
-input SerachTodo {
+input SearchTodo {
   column: String!
   value: String!
 }
 
 type Query {
-  todos(sortInput: SortTodo,serachInput: SerachTodo): [Todo!]!
+  todos(sortInput: SortTodo,searchInput: SearchTodo): [Todo!]!
 }
 
 type Mutation {
   createTodo(input: NewTodo!): Todo!
+  createTodoLabel(input: NewTodo!): TodoLabel!
 }

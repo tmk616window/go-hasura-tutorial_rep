@@ -16,13 +16,17 @@ func (r *mutationResolver) CreateTodo(ctx context.Context, input model.NewTodo) 
 	panic(fmt.Errorf("not implemented"))
 }
 
-func (r *queryResolver) Todos(ctx context.Context, sortInput *model.SortTodo, serachInput *model.SerachTodo) ([]*models.Todo, error) {
+func (r *mutationResolver) CreateTodoLabel(ctx context.Context, input model.NewTodo) (*models.TodoLabel, error) {
+	panic(fmt.Errorf("not implemented"))
+}
+
+func (r *queryResolver) Todos(ctx context.Context, sortInput *model.SortTodo, searchInput *model.SearchTodo) ([]*models.Todo, error) {
 	var todos []*models.Todo
 	db := postgresql.DbConnect()
-	if (sortInput) != nil && (serachInput) != nil {
+	if (sortInput) != nil && (searchInput) != nil {
 		db.Preload("TodoLabels").Find(&todos)
-	} else if serachInput != nil {
-		db.Preload("TodoLabels").Where(serachInput.Column+" = ?", serachInput.Value).Find(&todos)
+	} else if searchInput != nil {
+		db.Preload("TodoLabels").Where(searchInput.Column+" = ?", searchInput.Value).Find(&todos)
 	} else if sortInput != nil {
 		db.Preload("TodoLabels").Order(sortInput.Column + " " + sortInput.Value).Find(&todos)
 	}
@@ -98,18 +102,6 @@ func (r *queryResolver) SortTodos(ctx context.Context, column string, value stri
 	fmt.Println(&sortTodos)
 	return sortTodos, nil
 }
-func (r *queryResolver) Labels(ctx context.Context) ([]*model.Label, error) {
-	panic(fmt.Errorf("not implemented"))
-}
-func (r *queryResolver) Statuses(ctx context.Context) ([]*model.Status, error) {
-	var statuses []*model.Status
-	db := postgresql.DbConnect()
-	db.Find(&statuses)
-	return statuses, nil
-}
-func (r *queryResolver) Priorities(ctx context.Context) ([]*model.Priority, error) {
-	panic(fmt.Errorf("not implemented"))
-}
 func (r *todoResolver) Labels(ctx context.Context, obj *models.Todo) ([]*model.Label, error) {
 	panic(fmt.Errorf("not implemented"))
 }
@@ -118,11 +110,4 @@ func (r *todoResolver) PriorityID(ctx context.Context, obj *models.Todo) (int, e
 }
 func (r *todoResolver) StatusID(ctx context.Context, obj *models.Todo) (int, error) {
 	panic(fmt.Errorf("not implemented"))
-}
-func (r *queryResolver) User(ctx context.Context, obj *models.Todo) (*model.User, error) {
-	var user model.User
-	db := postgresql.DbConnect()
-	db.First(&user, obj.UserID)
-	fmt.Println(user)
-	return &user, nil
 }
