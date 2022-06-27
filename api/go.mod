@@ -5,6 +5,8 @@ go 1.18
 require (
 	github.com/99designs/gqlgen v0.17.10
 	github.com/vektah/gqlparser/v2 v2.4.5
+	gorm.io/driver/postgres v1.3.7
+	gorm.io/gorm v1.23.4
 )
 
 require (
@@ -24,6 +26,4 @@ require (
 	github.com/mitchellh/mapstructure v1.3.1 // indirect
 	golang.org/x/crypto v0.0.0-20210921155107-089bfa567519 // indirect
 	golang.org/x/text v0.3.7 // indirect
-	gorm.io/driver/postgres v1.3.7 // indirect
-	gorm.io/gorm v1.23.4 // indirect
 )
