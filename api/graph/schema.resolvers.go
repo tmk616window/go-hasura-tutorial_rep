@@ -7,7 +7,7 @@ import (
 	"api/graph/generated"
 	"api/graph/model"
 	"api/graph/models"
-	postgresql "api/model"
+	"api/postgresql"
 	"context"
 	"fmt"
 )
