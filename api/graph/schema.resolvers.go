@@ -28,7 +28,7 @@ func (r *queryResolver) Todos(ctx context.Context, sortInput *model.SortTodo, se
 	} else if searchInput != nil {
 		db.Preload("TodoLabels").Where(searchInput.Column+" = ?", searchInput.Value).Find(&todos)
 	} else if sortInput != nil {
-		db.Preload("TodoLabels").Order(sortInput.Column + " " + sortInput.Value).Find(&todos)
+		db.Preload("TodoLabels").Order(sortInput.Column + " " + string(sortInput.Sort)).Find(&todos)
 	}
 	fmt.Println(&todos)
 	return todos, nil
