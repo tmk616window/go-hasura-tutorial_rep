@@ -1,8 +1,8 @@
 package main
 
 import (
-	"api_test/graph"
-	"api_test/graph/generated"
+	"api/graph"
+	"api/graph/generated"
 	"log"
 	"net/http"
 	"os"
