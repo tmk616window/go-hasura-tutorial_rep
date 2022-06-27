@@ -7,5 +7,5 @@ type Todo struct {
 	UserID      int     `json:"userID"`
 	StatusID    int     `json:"statusID"`
 	PriorityID  int     `json:"priorityID"`
-	FinishedAt  string  `json:"finished_at"`
+	FinishedAt  string  `json:"finishedAt"`
 }
