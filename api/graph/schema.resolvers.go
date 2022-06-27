@@ -22,7 +22,7 @@ func (r *mutationResolver) CreateTodoLabel(ctx context.Context, input model.NewT
 
 func (r *queryResolver) Todos(ctx context.Context, sortInput *model.SortTodo, searchInput *model.SearchTodo) ([]*models.Todo, error) {
 	var todos []*models.Todo
-	db := postgresql.DBConnect()
+	db := r.Resolver.DB
 
 	db = db.Preload("TodoLabels")
 	if searchInput != nil {
@@ -31,6 +31,7 @@ func (r *queryResolver) Todos(ctx context.Context, sortInput *model.SortTodo, se
 		db.Order(sortInput.Column + " " + string(sortInput.Sort))
 	}
 	db.Find(&todos)
+
 	return todos, nil
 }
 
@@ -40,28 +41,28 @@ func (r *todoResolver) User(ctx context.Context, obj *models.Todo) (*model.User,
 
 func (r *todoResolver) Status(ctx context.Context, obj *models.Todo) (*model.Status, error) {
 	var status model.Status
-	db := postgresql.DBConnect()
+	db := r.Resolver.DB
 	db.First(&status, obj.StatusID)
 	return &status, nil
 }
 
 func (r *todoResolver) Priority(ctx context.Context, obj *models.Todo) (*model.Priority, error) {
 	var priority model.Priority
-	db := postgresql.DBConnect()
+	db := r.Resolver.DB
 	db.First(&priority, obj.PriorityID)
 	return &priority, nil
 }
 
 func (r *todoResolver) TodoLabels(ctx context.Context, obj *models.Todo) ([]*models.TodoLabel, error) {
 	var todoLabel []*models.TodoLabel
-	db := postgresql.DBConnect()
+	db := r.Resolver.DB
 	db.Preload("Labels").Find(&todoLabel)
 	return todoLabel, nil
 }
 
 func (r *todoLabelResolver) Label(ctx context.Context, obj *models.TodoLabel) (*model.Label, error) {
 	var label model.Label
-	db := postgresql.DBConnect()
+	db := r.Resolver.DB
 	db.First(&label)
 	return &label, nil
 }

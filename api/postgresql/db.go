@@ -9,7 +9,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func DbConnect() *gorm.DB {
+func DBConnect() *gorm.DB {
 
 	err := godotenv.Load(".env")
 	if err != nil {
