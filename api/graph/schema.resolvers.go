@@ -22,14 +22,15 @@ func (r *mutationResolver) CreateTodoLabel(ctx context.Context, input model.NewT
 
 func (r *queryResolver) Todos(ctx context.Context, sortInput *model.SortTodo, searchInput *model.SearchTodo) ([]*models.Todo, error) {
 	var todos []*models.Todo
-	db := postgresql.DbConnect()
-	if (sortInput) != nil && (searchInput) != nil {
-		db.Preload("TodoLabels").Find(&todos)
-	} else if searchInput != nil {
-		db.Preload("TodoLabels").Where(searchInput.Column+" = ?", searchInput.Value).Find(&todos)
+	db := postgresql.DBConnect()
+
+	db = db.Preload("TodoLabels")
+	if searchInput != nil {
+		db.Where(searchInput.Column+" = ?", searchInput.Value)
 	} else if sortInput != nil {
-		db.Preload("TodoLabels").Order(sortInput.Column + " " + string(sortInput.Sort)).Find(&todos)
+		db.Order(sortInput.Column + " " + string(sortInput.Sort))
 	}
+	db.Find(&todos)
 	return todos, nil
 }
 
@@ -39,28 +40,28 @@ func (r *todoResolver) User(ctx context.Context, obj *models.Todo) (*model.User,
 
 func (r *todoResolver) Status(ctx context.Context, obj *models.Todo) (*model.Status, error) {
 	var status model.Status
-	db := postgresql.DbConnect()
+	db := postgresql.DBConnect()
 	db.First(&status, obj.StatusID)
 	return &status, nil
 }
 
 func (r *todoResolver) Priority(ctx context.Context, obj *models.Todo) (*model.Priority, error) {
 	var priority model.Priority
-	db := postgresql.DbConnect()
+	db := postgresql.DBConnect()
 	db.First(&priority, obj.PriorityID)
 	return &priority, nil
 }
 
 func (r *todoResolver) TodoLabels(ctx context.Context, obj *models.Todo) ([]*models.TodoLabel, error) {
 	var todoLabel []*models.TodoLabel
-	db := postgresql.DbConnect()
+	db := postgresql.DBConnect()
 	db.Preload("Labels").Find(&todoLabel)
 	return todoLabel, nil
 }
 
 func (r *todoLabelResolver) Label(ctx context.Context, obj *models.TodoLabel) (*model.Label, error) {
 	var label model.Label
-	db := postgresql.DbConnect()
+	db := postgresql.DBConnect()
 	db.First(&label)
 	return &label, nil
 }
@@ -93,7 +94,7 @@ func (r *queryResolver) Users(ctx context.Context, column string, value string) 
 }
 func (r *queryResolver) SortTodos(ctx context.Context, column string, value string) ([]*models.Todo, error) {
 	var sortTodos []*models.Todo
-	db := postgresql.DbConnect()
+	db := postgresql.DBConnect()
 	db.Order(column + " " + value).Find(&sortTodos)
 	return sortTodos, nil
 }
