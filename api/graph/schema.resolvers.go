@@ -7,12 +7,46 @@ import (
 	"api/graph/generated"
 	"api/graph/model"
 	"api/graph/models"
+	servicesTodo "api/graph/services/todo"
 	"context"
 	"fmt"
+	"time"
 )
 
 func (r *mutationResolver) CreateTodo(ctx context.Context, input model.NewTodo) (*models.Todo, error) {
-	panic(fmt.Errorf("not implemented"))
+	db := r.Resolver.DB
+	// フォーマット　"2022/6/28 13:00"
+	finishTime := servicesTodo.StringToTime(input.FinishedAt)
+
+	err := servicesTodo.TodoValidate(servicesTodo.ValidateTodoType{
+		Title:       input.Title,
+		Description: input.Description,
+		LabelList:   input.LabelList,
+		FinishTime:  finishTime,
+		LabelCount:  0,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	t := &models.Todo{
+		Title:       input.Title,
+		Description: &input.Description,
+		UserID:      1,
+		StatusID:    1,
+		PriorityID:  1,
+		FinishedAt:  finishTime,
+		CreatedAt:   time.Now(),
+		UpdatedAt:   time.Now(),
+	}
+
+	err = db.Create(t).Error
+	if err != nil {
+		return nil, err
+	}
+	servicesTodo.CreateTodoLabelRelation(input.LabelList, t.ID, db)
+
+	return t, nil
 }
 
 func (r *mutationResolver) CreateTodoLabel(ctx context.Context, input model.NewTodo) (*models.TodoLabel, error) {

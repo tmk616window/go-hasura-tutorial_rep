@@ -10,7 +10,7 @@ import (
 )
 
 type Label struct {
-	ID   string `json:"id"`
+	ID   int    `json:"id"`
 	Name string `json:"name"`
 }
 
@@ -22,7 +22,7 @@ type NewTodo struct {
 }
 
 type Priority struct {
-	ID   string `json:"id"`
+	ID   int    `json:"id"`
 	Name string `json:"name"`
 }
 
@@ -37,13 +37,13 @@ type SortTodo struct {
 }
 
 type Status struct {
-	ID    string         `json:"id"`
+	ID    int            `json:"id"`
 	Name  string         `json:"name"`
 	Todos []*models.Todo `json:"todos"`
 }
 
 type User struct {
-	ID        string         `json:"id"`
+	ID        int            `json:"id"`
 	Name      string         `json:"name"`
 	Todos     []*models.Todo `json:"todos"`
 	SortTodos []*models.Todo `json:"sortTodos"`
