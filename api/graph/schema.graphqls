@@ -1,28 +1,73 @@
-# GraphQL schema example
-#
-# https://gqlgen.com/getting-started/
+scalar DateTime
 
 type Todo {
   id: ID!
-  text: String!
-  done: Boolean!
-  user: User!
+  title: String!
+  description: String!
+  userID: Int!
+  statusID: Int!
+  status: Status!
+  priorityID: Int!
+  priority: Priority!
+  finished_at: String!
+  todoLabels: [TodoLabel!]!
 }
 
 type User {
   id: ID!
   name: String!
+  todos: [Todo!]!
+  sortTodos(column: String, value: String): [Todo!]!
 }
 
-type Query {
+type Status {
+  id: ID!
+  name: String!
   todos: [Todo!]!
 }
 
+type Priority {
+  id: ID!
+  name: String!
+}
+
+type Label {
+  id: ID!
+  name: String!
+}
+
+type TodoLabel {
+  id: ID!
+  todoID: Int!
+  labelID: Int!
+  label: Label!
+}
+
 input NewTodo {
-  text: String!
-  userId: String!
+  title: String!
+  description: String
+}
+
+input SortTodo {
+  column: String!
+  sort: Sort!
+}
+
+enum Sort {
+    asc
+    desc
+}
+
+input SearchTodo {
+  column: String!
+  value: String!
+}
+
+type Query {
+  gqlgenTodos(sortInput: SortTodo,searchInput: SearchTodo): [Todo!]!
 }
 
 type Mutation {
   createTodo(input: NewTodo!): Todo!
+  createTodoLabel(input: NewTodo!): TodoLabel!
 }

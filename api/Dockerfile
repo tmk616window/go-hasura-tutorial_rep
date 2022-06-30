@@ -2,8 +2,8 @@
 FROM golang:latest
 # コンテナ内に作業ディレクトリを作成
 # RUN mkdir /go/src
-WORKDIR /go/api_test
+WORKDIR /go/api
 
 # GoApp起動
 # CMD ["go","run","main.go"]
-ADD . /go/api_test
+ADD . /go/api

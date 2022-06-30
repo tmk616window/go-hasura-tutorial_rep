@@ -1,8 +1,9 @@
 package main
 
 import (
-	"api_test/graph"
-	"api_test/graph/generated"
+	"api/graph"
+	"api/graph/generated"
+	"api/postgresql"
 	"log"
 	"net/http"
 	"os"
@@ -14,12 +15,20 @@ import (
 const defaultPort = "8080"
 
 func main() {
+
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = defaultPort
 	}
 
-	srv := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: &graph.Resolver{}}))
+	db := postgresql.DBConnect()
+	if postgres, err := db.DB(); err == nil {
+		defer postgres.Close()
+	}
+
+	srv := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: &graph.Resolver{
+		DB: db,
+	}}))
 
 	http.Handle("/", playground.Handler("GraphQL playground", "/query"))
 	http.Handle("/query", srv)
