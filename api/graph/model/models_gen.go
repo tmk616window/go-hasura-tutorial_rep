@@ -17,7 +17,7 @@ type Label struct {
 type NewTodo struct {
 	Title       string `json:"title"`
 	Description string `json:"description"`
-	LabelList   string `json:"labelList"`
+	LabelIDs    []int  `json:"labelIDs"`
 	FinishedAt  string `json:"finishedAt"`
 }
 

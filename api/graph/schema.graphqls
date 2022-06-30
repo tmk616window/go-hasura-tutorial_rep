@@ -45,7 +45,7 @@ type TodoLabel {
 input NewTodo {
   title: String!
   description: String!
-  labelList: String!
+  labelIDs: [Int!]!
   finishedAt: String!
 }
 

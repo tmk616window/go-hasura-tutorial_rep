@@ -3,7 +3,6 @@ package todo
 import (
 	"api/graph/models"
 	"errors"
-	"strings"
 	"time"
 
 	"gorm.io/gorm"
@@ -12,28 +11,13 @@ import (
 type ValidateTodoType struct {
 	Title       string
 	Description string
-	LabelList   string
+	LabelIDs    []int
 	FinishTime  time.Time
 	LabelCount  int
 }
 
-func CreateTodoLabelRelation(labels string, todoID int, db *gorm.DB) {
-	labelArr := strings.Split(labels, " ")
-
-	labelList := map[string]int{
-		"label1": 1,
-		"label2": 2,
-		"label3": 3,
-		"label4": 4,
-		"label5": 5,
-		"label6": 6,
-		"label7": 7,
-		"label8": 8,
-		"label9": 9,
-	}
-
-	for _, label := range labelArr {
-		labelID := labelList[label]
+func CreateTodoLabelRelation(labelIDs []int, todoID int, db *gorm.DB) {
+	for _, labelID := range labelIDs {
 		db.Create(&models.TodoLabel{
 			LabelID: labelID,
 			TodoID:  todoID,
@@ -72,10 +56,8 @@ func TodoValidate(obj ValidateTodoType) error {
 		return errors.New("終了期限を現在日時以降にしてください")
 	}
 
-	labelArr := strings.Split(obj.LabelList, " ")
-	if len(labelArr) > 5 || (5-obj.LabelCount)-len(labelArr) < 0 {
+	if len(obj.LabelIDs) > 5 || (5-obj.LabelCount)-len(obj.LabelIDs) < 0 {
 		return errors.New("labelは登録できるのは5つまでです。")
 	}
-
 	return nil
 }

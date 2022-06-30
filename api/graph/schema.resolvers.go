@@ -21,7 +21,7 @@ func (r *mutationResolver) CreateTodo(ctx context.Context, input model.NewTodo) 
 	err := servicesTodo.TodoValidate(servicesTodo.ValidateTodoType{
 		Title:       input.Title,
 		Description: input.Description,
-		LabelList:   input.LabelList,
+		LabelIDs:    input.LabelIDs,
 		FinishTime:  finishTime,
 		LabelCount:  0,
 	})
@@ -44,7 +44,7 @@ func (r *mutationResolver) CreateTodo(ctx context.Context, input model.NewTodo) 
 	if err != nil {
 		return nil, err
 	}
-	servicesTodo.CreateTodoLabelRelation(input.LabelList, t.ID, db)
+	servicesTodo.CreateTodoLabelRelation(input.LabelIDs, t.ID, db)
 
 	return t, nil
 }
@@ -111,3 +111,13 @@ type mutationResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }
 type todoResolver struct{ *Resolver }
 type todoLabelResolver struct{ *Resolver }
+
+// !!! WARNING !!!
+// The code below was going to be deleted when updating resolvers. It has been copied here so you have
+// one last chance to move it out of harms way if you want. There are two reasons this happens:
+//  - When renaming or deleting a resolver the old code will be put in here. You can safely delete
+//    it when you're done.
+//  - You have helper methods in this file. Move them out to keep these resolver files clean.
+func (r *todoResolver) FinishedAt(ctx context.Context, obj *models.Todo) (string, error) {
+	panic(fmt.Errorf("not implemented"))
+}
