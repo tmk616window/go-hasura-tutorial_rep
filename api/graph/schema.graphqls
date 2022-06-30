@@ -9,7 +9,7 @@ type Todo {
   status: Status!
   priorityID: Int!
   priority: Priority!
-  finished_at: String!
+  finishedAt: String!
   todoLabels: [TodoLabel!]!
 }
 
@@ -45,7 +45,9 @@ type TodoLabel {
 
 input NewTodo {
   title: String!
-  description: String
+  description: String!
+  labelList: String!
+  finishedAt: String!
 }
 
 input SortTodo {

@@ -15,8 +15,10 @@ type Label struct {
 }
 
 type NewTodo struct {
-	Title       string  `json:"title"`
-	Description *string `json:"description"`
+	Title       string `json:"title"`
+	Description string `json:"description"`
+	LabelList   string `json:"labelList"`
+	FinishedAt  string `json:"finishedAt"`
 }
 
 type Priority struct {

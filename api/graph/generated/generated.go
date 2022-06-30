@@ -111,7 +111,7 @@ type TodoResolver interface {
 	Status(ctx context.Context, obj *models.Todo) (*model.Status, error)
 
 	Priority(ctx context.Context, obj *models.Todo) (*model.Priority, error)
-
+	FinishedAt(ctx context.Context, obj *models.Todo) (string, error)
 	TodoLabels(ctx context.Context, obj *models.Todo) ([]*models.TodoLabel, error)
 }
 type TodoLabelResolver interface {
@@ -225,7 +225,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Todo.Description(childComplexity), true
 
-	case "Todo.finished_at":
+	case "Todo.finishedAt":
 		if e.complexity.Todo.FinishedAt == nil {
 			break
 		}
@@ -431,7 +431,7 @@ type Todo {
   status: Status!
   priorityID: Int!
   priority: Priority!
-  finished_at: String!
+  finishedAt: String!
   todoLabels: [TodoLabel!]!
 }
 
@@ -467,7 +467,9 @@ type TodoLabel {
 
 input NewTodo {
   title: String!
-  description: String
+  description: String!
+  labelList: String!
+  finishedAt: String!
 }
 
 input SortTodo {
@@ -775,8 +777,8 @@ func (ec *executionContext) fieldContext_Mutation_createTodo(ctx context.Context
 				return ec.fieldContext_Todo_priorityID(ctx, field)
 			case "priority":
 				return ec.fieldContext_Todo_priority(ctx, field)
-			case "finished_at":
-				return ec.fieldContext_Todo_finished_at(ctx, field)
+			case "finishedAt":
+				return ec.fieldContext_Todo_finishedAt(ctx, field)
 			case "todoLabels":
 				return ec.fieldContext_Todo_todoLabels(ctx, field)
 			}
@@ -1005,8 +1007,8 @@ func (ec *executionContext) fieldContext_Query_gqlgenTodos(ctx context.Context, 
 				return ec.fieldContext_Todo_priorityID(ctx, field)
 			case "priority":
 				return ec.fieldContext_Todo_priority(ctx, field)
-			case "finished_at":
-				return ec.fieldContext_Todo_finished_at(ctx, field)
+			case "finishedAt":
+				return ec.fieldContext_Todo_finishedAt(ctx, field)
 			case "todoLabels":
 				return ec.fieldContext_Todo_todoLabels(ctx, field)
 			}
@@ -1299,8 +1301,8 @@ func (ec *executionContext) fieldContext_Status_todos(ctx context.Context, field
 				return ec.fieldContext_Todo_priorityID(ctx, field)
 			case "priority":
 				return ec.fieldContext_Todo_priority(ctx, field)
-			case "finished_at":
-				return ec.fieldContext_Todo_finished_at(ctx, field)
+			case "finishedAt":
+				return ec.fieldContext_Todo_finishedAt(ctx, field)
 			case "todoLabels":
 				return ec.fieldContext_Todo_todoLabels(ctx, field)
 			}
@@ -1676,8 +1678,8 @@ func (ec *executionContext) fieldContext_Todo_priority(ctx context.Context, fiel
 	return fc, nil
 }
 
-func (ec *executionContext) _Todo_finished_at(ctx context.Context, field graphql.CollectedField, obj *models.Todo) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Todo_finished_at(ctx, field)
+func (ec *executionContext) _Todo_finishedAt(ctx context.Context, field graphql.CollectedField, obj *models.Todo) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Todo_finishedAt(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -1690,7 +1692,7 @@ func (ec *executionContext) _Todo_finished_at(ctx context.Context, field graphql
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.FinishedAt, nil
+		return ec.resolvers.Todo().FinishedAt(rctx, obj)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1707,12 +1709,12 @@ func (ec *executionContext) _Todo_finished_at(ctx context.Context, field graphql
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Todo_finished_at(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Todo_finishedAt(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Todo",
 		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
+		IsMethod:   true,
+		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("field of type String does not have child fields")
 		},
@@ -2099,8 +2101,8 @@ func (ec *executionContext) fieldContext_User_todos(ctx context.Context, field g
 				return ec.fieldContext_Todo_priorityID(ctx, field)
 			case "priority":
 				return ec.fieldContext_Todo_priority(ctx, field)
-			case "finished_at":
-				return ec.fieldContext_Todo_finished_at(ctx, field)
+			case "finishedAt":
+				return ec.fieldContext_Todo_finishedAt(ctx, field)
 			case "todoLabels":
 				return ec.fieldContext_Todo_todoLabels(ctx, field)
 			}
@@ -2165,8 +2167,8 @@ func (ec *executionContext) fieldContext_User_sortTodos(ctx context.Context, fie
 				return ec.fieldContext_Todo_priorityID(ctx, field)
 			case "priority":
 				return ec.fieldContext_Todo_priority(ctx, field)
-			case "finished_at":
-				return ec.fieldContext_Todo_finished_at(ctx, field)
+			case "finishedAt":
+				return ec.fieldContext_Todo_finishedAt(ctx, field)
 			case "todoLabels":
 				return ec.fieldContext_Todo_todoLabels(ctx, field)
 			}
@@ -3981,7 +3983,23 @@ func (ec *executionContext) unmarshalInputNewTodo(ctx context.Context, obj inter
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("description"))
-			it.Description, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			it.Description, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "labelList":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("labelList"))
+			it.LabelList, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "finishedAt":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("finishedAt"))
+			it.FinishedAt, err = ec.unmarshalNString2string(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -4378,13 +4396,26 @@ func (ec *executionContext) _Todo(ctx context.Context, sel ast.SelectionSet, obj
 				return innerFunc(ctx)
 
 			})
-		case "finished_at":
+		case "finishedAt":
+			field := field
 
-			out.Values[i] = ec._Todo_finished_at(ctx, field, obj)
-
-			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
+			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Todo_finishedAt(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
 			}
+
+			out.Concurrently(i, func() graphql.Marshaler {
+				return innerFunc(ctx)
+
+			})
 		case "todoLabels":
 			field := field
 
