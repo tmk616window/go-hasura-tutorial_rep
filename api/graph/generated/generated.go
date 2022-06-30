@@ -63,7 +63,7 @@ type ComplexityRoot struct {
 	}
 
 	Query struct {
-		Todos func(childComplexity int, sortInput *model.SortTodo, searchInput *model.SearchTodo) int
+		GqlgenTodos func(childComplexity int, sortInput *model.SortTodo, searchInput *model.SearchTodo) int
 	}
 
 	Status struct {
@@ -105,7 +105,7 @@ type MutationResolver interface {
 	CreateTodoLabel(ctx context.Context, input model.NewTodo) (*models.TodoLabel, error)
 }
 type QueryResolver interface {
-	Todos(ctx context.Context, sortInput *model.SortTodo, searchInput *model.SearchTodo) ([]*models.Todo, error)
+	GqlgenTodos(ctx context.Context, sortInput *model.SortTodo, searchInput *model.SearchTodo) ([]*models.Todo, error)
 }
 type TodoResolver interface {
 	Status(ctx context.Context, obj *models.Todo) (*model.Status, error)
@@ -185,17 +185,17 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Priority.Name(childComplexity), true
 
-	case "Query.todos":
-		if e.complexity.Query.Todos == nil {
+	case "Query.gqlgenTodos":
+		if e.complexity.Query.GqlgenTodos == nil {
 			break
 		}
 
-		args, err := ec.field_Query_todos_args(context.TODO(), rawArgs)
+		args, err := ec.field_Query_gqlgenTodos_args(context.TODO(), rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
-		return e.complexity.Query.Todos(childComplexity, args["sortInput"].(*model.SortTodo), args["searchInput"].(*model.SearchTodo)), true
+		return e.complexity.Query.GqlgenTodos(childComplexity, args["sortInput"].(*model.SortTodo), args["searchInput"].(*model.SearchTodo)), true
 
 	case "Status.id":
 		if e.complexity.Status.ID == nil {
@@ -486,7 +486,7 @@ input SearchTodo {
 }
 
 type Query {
-  todos(sortInput: SortTodo,searchInput: SearchTodo): [Todo!]!
+  gqlgenTodos(sortInput: SortTodo,searchInput: SearchTodo): [Todo!]!
 }
 
 type Mutation {
@@ -546,7 +546,7 @@ func (ec *executionContext) field_Query___type_args(ctx context.Context, rawArgs
 	return args, nil
 }
 
-func (ec *executionContext) field_Query_todos_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Query_gqlgenTodos_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
 	var arg0 *model.SortTodo
@@ -950,8 +950,8 @@ func (ec *executionContext) fieldContext_Priority_name(ctx context.Context, fiel
 	return fc, nil
 }
 
-func (ec *executionContext) _Query_todos(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Query_todos(ctx, field)
+func (ec *executionContext) _Query_gqlgenTodos(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_gqlgenTodos(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -964,7 +964,7 @@ func (ec *executionContext) _Query_todos(ctx context.Context, field graphql.Coll
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().Todos(rctx, fc.Args["sortInput"].(*model.SortTodo), fc.Args["searchInput"].(*model.SearchTodo))
+		return ec.resolvers.Query().GqlgenTodos(rctx, fc.Args["sortInput"].(*model.SortTodo), fc.Args["searchInput"].(*model.SearchTodo))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -981,7 +981,7 @@ func (ec *executionContext) _Query_todos(ctx context.Context, field graphql.Coll
 	return ec.marshalNTodo2ᚕᚖapiᚋgraphᚋmodelsᚐTodoᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Query_todos(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Query_gqlgenTodos(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Query",
 		Field:      field,
@@ -1020,7 +1020,7 @@ func (ec *executionContext) fieldContext_Query_todos(ctx context.Context, field 
 		}
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
-	if fc.Args, err = ec.field_Query_todos_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+	if fc.Args, err = ec.field_Query_gqlgenTodos_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return
 	}
@@ -4198,7 +4198,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Query")
-		case "todos":
+		case "gqlgenTodos":
 			field := field
 
 			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
@@ -4207,7 +4207,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 						ec.Error(ctx, ec.Recover(ctx, r))
 					}
 				}()
-				res = ec._Query_todos(ctx, field)
+				res = ec._Query_gqlgenTodos(ctx, field)
 				if res == graphql.Null {
 					atomic.AddUint32(&invalids, 1)
 				}

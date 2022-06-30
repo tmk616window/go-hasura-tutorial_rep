@@ -64,7 +64,7 @@ input SearchTodo {
 }
 
 type Query {
-  todos(sortInput: SortTodo,searchInput: SearchTodo): [Todo!]!
+  gqlgenTodos(sortInput: SortTodo,searchInput: SearchTodo): [Todo!]!
 }
 
 type Mutation {
