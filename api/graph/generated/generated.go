@@ -82,7 +82,6 @@ type ComplexityRoot struct {
 		StatusID    func(childComplexity int) int
 		Title       func(childComplexity int) int
 		TodoLabels  func(childComplexity int) int
-		User        func(childComplexity int) int
 		UserID      func(childComplexity int) int
 	}
 
@@ -109,8 +108,6 @@ type QueryResolver interface {
 	Todos(ctx context.Context, sortInput *model.SortTodo, searchInput *model.SearchTodo) ([]*models.Todo, error)
 }
 type TodoResolver interface {
-	User(ctx context.Context, obj *models.Todo) (*model.User, error)
-
 	Status(ctx context.Context, obj *models.Todo) (*model.Status, error)
 
 	Priority(ctx context.Context, obj *models.Todo) (*model.Priority, error)
@@ -284,13 +281,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Todo.TodoLabels(childComplexity), true
 
-	case "Todo.user":
-		if e.complexity.Todo.User == nil {
-			break
-		}
-
-		return e.complexity.Todo.User(childComplexity), true
-
 	case "Todo.userID":
 		if e.complexity.Todo.UserID == nil {
 			break
@@ -437,7 +427,6 @@ type Todo {
   title: String!
   description: String!
   userID: Int!
-  user: User!
   statusID: Int!
   status: Status!
   priorityID: Int!
@@ -778,8 +767,6 @@ func (ec *executionContext) fieldContext_Mutation_createTodo(ctx context.Context
 				return ec.fieldContext_Todo_description(ctx, field)
 			case "userID":
 				return ec.fieldContext_Todo_userID(ctx, field)
-			case "user":
-				return ec.fieldContext_Todo_user(ctx, field)
 			case "statusID":
 				return ec.fieldContext_Todo_statusID(ctx, field)
 			case "status":
@@ -1010,8 +997,6 @@ func (ec *executionContext) fieldContext_Query_todos(ctx context.Context, field 
 				return ec.fieldContext_Todo_description(ctx, field)
 			case "userID":
 				return ec.fieldContext_Todo_userID(ctx, field)
-			case "user":
-				return ec.fieldContext_Todo_user(ctx, field)
 			case "statusID":
 				return ec.fieldContext_Todo_statusID(ctx, field)
 			case "status":
@@ -1306,8 +1291,6 @@ func (ec *executionContext) fieldContext_Status_todos(ctx context.Context, field
 				return ec.fieldContext_Todo_description(ctx, field)
 			case "userID":
 				return ec.fieldContext_Todo_userID(ctx, field)
-			case "user":
-				return ec.fieldContext_Todo_user(ctx, field)
 			case "statusID":
 				return ec.fieldContext_Todo_statusID(ctx, field)
 			case "status":
@@ -1498,60 +1481,6 @@ func (ec *executionContext) fieldContext_Todo_userID(ctx context.Context, field 
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("field of type Int does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _Todo_user(ctx context.Context, field graphql.CollectedField, obj *models.Todo) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Todo_user(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Todo().User(rctx, obj)
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(*model.User)
-	fc.Result = res
-	return ec.marshalNUser2ᚖapiᚋgraphᚋmodelᚐUser(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_Todo_user(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "Todo",
-		Field:      field,
-		IsMethod:   true,
-		IsResolver: true,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			switch field.Name {
-			case "id":
-				return ec.fieldContext_User_id(ctx, field)
-			case "name":
-				return ec.fieldContext_User_name(ctx, field)
-			case "todos":
-				return ec.fieldContext_User_todos(ctx, field)
-			case "sortTodos":
-				return ec.fieldContext_User_sortTodos(ctx, field)
-			}
-			return nil, fmt.Errorf("no field named %q was found under type User", field.Name)
 		},
 	}
 	return fc, nil
@@ -2162,8 +2091,6 @@ func (ec *executionContext) fieldContext_User_todos(ctx context.Context, field g
 				return ec.fieldContext_Todo_description(ctx, field)
 			case "userID":
 				return ec.fieldContext_Todo_userID(ctx, field)
-			case "user":
-				return ec.fieldContext_Todo_user(ctx, field)
 			case "statusID":
 				return ec.fieldContext_Todo_statusID(ctx, field)
 			case "status":
@@ -2230,8 +2157,6 @@ func (ec *executionContext) fieldContext_User_sortTodos(ctx context.Context, fie
 				return ec.fieldContext_Todo_description(ctx, field)
 			case "userID":
 				return ec.fieldContext_Todo_userID(ctx, field)
-			case "user":
-				return ec.fieldContext_Todo_user(ctx, field)
 			case "statusID":
 				return ec.fieldContext_Todo_statusID(ctx, field)
 			case "status":
@@ -4399,26 +4324,6 @@ func (ec *executionContext) _Todo(ctx context.Context, sel ast.SelectionSet, obj
 			if out.Values[i] == graphql.Null {
 				atomic.AddUint32(&invalids, 1)
 			}
-		case "user":
-			field := field
-
-			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
-				defer func() {
-					if r := recover(); r != nil {
-						ec.Error(ctx, ec.Recover(ctx, r))
-					}
-				}()
-				res = ec._Todo_user(ctx, field, obj)
-				if res == graphql.Null {
-					atomic.AddUint32(&invalids, 1)
-				}
-				return res
-			}
-
-			out.Concurrently(i, func() graphql.Marshaler {
-				return innerFunc(ctx)
-
-			})
 		case "statusID":
 
 			out.Values[i] = ec._Todo_statusID(ctx, field, obj)
@@ -5192,20 +5097,6 @@ func (ec *executionContext) marshalNTodoLabel2ᚖapiᚋgraphᚋmodelsᚐTodoLabe
 		return graphql.Null
 	}
 	return ec._TodoLabel(ctx, sel, v)
-}
-
-func (ec *executionContext) marshalNUser2apiᚋgraphᚋmodelᚐUser(ctx context.Context, sel ast.SelectionSet, v model.User) graphql.Marshaler {
-	return ec._User(ctx, sel, &v)
-}
-
-func (ec *executionContext) marshalNUser2ᚖapiᚋgraphᚋmodelᚐUser(ctx context.Context, sel ast.SelectionSet, v *model.User) graphql.Marshaler {
-	if v == nil {
-		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
-		}
-		return graphql.Null
-	}
-	return ec._User(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalN__Directive2githubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐDirective(ctx context.Context, sel ast.SelectionSet, v introspection.Directive) graphql.Marshaler {

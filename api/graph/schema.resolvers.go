@@ -33,10 +33,6 @@ func (r *queryResolver) Todos(ctx context.Context, sortInput *model.SortTodo, se
 	return todos, nil
 }
 
-func (r *todoResolver) User(ctx context.Context, obj *models.Todo) (*model.User, error) {
-	panic(fmt.Errorf("not implemented"))
-}
-
 func (r *todoResolver) Status(ctx context.Context, obj *models.Todo) (*model.Status, error) {
 	var status model.Status
 	db := r.Resolver.DB

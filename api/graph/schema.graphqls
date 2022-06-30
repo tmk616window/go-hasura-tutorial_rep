@@ -5,7 +5,6 @@ type Todo {
   title: String!
   description: String!
   userID: Int!
-  user: User!
   statusID: Int!
   status: Status!
   priorityID: Int!
