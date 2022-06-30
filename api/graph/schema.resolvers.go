@@ -23,7 +23,6 @@ func (r *queryResolver) Todos(ctx context.Context, sortInput *model.SortTodo, se
 	var todos []*models.Todo
 	db := r.Resolver.DB
 
-	db = db.Preload("TodoLabels")
 	if searchInput != nil {
 		db.Where(searchInput.Column+" = ?", searchInput.Value)
 	} else if sortInput != nil {
@@ -55,14 +54,14 @@ func (r *todoResolver) Priority(ctx context.Context, obj *models.Todo) (*model.P
 func (r *todoResolver) TodoLabels(ctx context.Context, obj *models.Todo) ([]*models.TodoLabel, error) {
 	var todoLabel []*models.TodoLabel
 	db := r.Resolver.DB
-	db.Preload("Labels").Find(&todoLabel)
+	db.Where("todo_id = ?", obj.ID).Find(&todoLabel)
 	return todoLabel, nil
 }
 
 func (r *todoLabelResolver) Label(ctx context.Context, obj *models.TodoLabel) (*model.Label, error) {
 	var label model.Label
 	db := r.Resolver.DB
-	db.First(&label)
+	db.First(&label, obj.LabelID)
 	return &label, nil
 }
 
