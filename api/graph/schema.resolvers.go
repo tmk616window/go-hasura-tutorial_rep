@@ -49,7 +49,13 @@ func (r *mutationResolver) CreateTodo(ctx context.Context, input model.NewTodo) 
 	if err != nil {
 		return nil, err
 	}
-	servicesTodo.CreateTodoLabel(input.LabelIDs, t.ID, db)
+
+	for _, labelID := range input.LabelIDs {
+		db.Create(&models.TodoLabel{
+			LabelID: labelID,
+			TodoID:  t.ID,
+		})
+	}
 
 	return t, nil
 }
