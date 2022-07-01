@@ -12,6 +12,7 @@ import (
 	"strconv"
 	"sync"
 	"sync/atomic"
+	"time"
 
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/graphql/introspection"
@@ -74,6 +75,7 @@ type ComplexityRoot struct {
 
 	Todo struct {
 		Description func(childComplexity int) int
+		FinishedAt  func(childComplexity int) int
 		ID          func(childComplexity int) int
 		Priority    func(childComplexity int) int
 		PriorityID  func(childComplexity int) int
@@ -110,6 +112,7 @@ type TodoResolver interface {
 	Status(ctx context.Context, obj *models.Todo) (*model.Status, error)
 
 	Priority(ctx context.Context, obj *models.Todo) (*model.Priority, error)
+
 	TodoLabels(ctx context.Context, obj *models.Todo) ([]*models.TodoLabel, error)
 }
 type TodoLabelResolver interface {
@@ -222,6 +225,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Todo.Description(childComplexity), true
+
+	case "Todo.finishedAt":
+		if e.complexity.Todo.FinishedAt == nil {
+			break
+		}
+
+		return e.complexity.Todo.FinishedAt(childComplexity), true
 
 	case "Todo.id":
 		if e.complexity.Todo.ID == nil {
@@ -411,7 +421,7 @@ func (ec *executionContext) introspectType(name string) (*introspection.Type, er
 }
 
 var sources = []*ast.Source{
-	{Name: "../schema.graphqls", Input: `scalar DateTime
+	{Name: "../schema.graphqls", Input: `scalar Time
 
 type Todo {
   id: Int!
@@ -422,6 +432,7 @@ type Todo {
   status: Status!
   priorityID: Int!
   priority: Priority!
+  finishedAt: Time!
   todoLabels: [TodoLabel!]!
 }
 
@@ -767,6 +778,8 @@ func (ec *executionContext) fieldContext_Mutation_createTodo(ctx context.Context
 				return ec.fieldContext_Todo_priorityID(ctx, field)
 			case "priority":
 				return ec.fieldContext_Todo_priority(ctx, field)
+			case "finishedAt":
+				return ec.fieldContext_Todo_finishedAt(ctx, field)
 			case "todoLabels":
 				return ec.fieldContext_Todo_todoLabels(ctx, field)
 			}
@@ -995,6 +1008,8 @@ func (ec *executionContext) fieldContext_Query_gqlgenTodos(ctx context.Context, 
 				return ec.fieldContext_Todo_priorityID(ctx, field)
 			case "priority":
 				return ec.fieldContext_Todo_priority(ctx, field)
+			case "finishedAt":
+				return ec.fieldContext_Todo_finishedAt(ctx, field)
 			case "todoLabels":
 				return ec.fieldContext_Todo_todoLabels(ctx, field)
 			}
@@ -1287,6 +1302,8 @@ func (ec *executionContext) fieldContext_Status_todos(ctx context.Context, field
 				return ec.fieldContext_Todo_priorityID(ctx, field)
 			case "priority":
 				return ec.fieldContext_Todo_priority(ctx, field)
+			case "finishedAt":
+				return ec.fieldContext_Todo_finishedAt(ctx, field)
 			case "todoLabels":
 				return ec.fieldContext_Todo_todoLabels(ctx, field)
 			}
@@ -1657,6 +1674,50 @@ func (ec *executionContext) fieldContext_Todo_priority(ctx context.Context, fiel
 				return ec.fieldContext_Priority_name(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Priority", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Todo_finishedAt(ctx context.Context, field graphql.CollectedField, obj *models.Todo) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Todo_finishedAt(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.FinishedAt, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(time.Time)
+	fc.Result = res
+	return ec.marshalNTime2timeᚐTime(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Todo_finishedAt(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Todo",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Time does not have child fields")
 		},
 	}
 	return fc, nil
@@ -2041,6 +2102,8 @@ func (ec *executionContext) fieldContext_User_todos(ctx context.Context, field g
 				return ec.fieldContext_Todo_priorityID(ctx, field)
 			case "priority":
 				return ec.fieldContext_Todo_priority(ctx, field)
+			case "finishedAt":
+				return ec.fieldContext_Todo_finishedAt(ctx, field)
 			case "todoLabels":
 				return ec.fieldContext_Todo_todoLabels(ctx, field)
 			}
@@ -2105,6 +2168,8 @@ func (ec *executionContext) fieldContext_User_sortTodos(ctx context.Context, fie
 				return ec.fieldContext_Todo_priorityID(ctx, field)
 			case "priority":
 				return ec.fieldContext_Todo_priority(ctx, field)
+			case "finishedAt":
+				return ec.fieldContext_Todo_finishedAt(ctx, field)
 			case "todoLabels":
 				return ec.fieldContext_Todo_todoLabels(ctx, field)
 			}
@@ -4332,6 +4397,13 @@ func (ec *executionContext) _Todo(ctx context.Context, sel ast.SelectionSet, obj
 				return innerFunc(ctx)
 
 			})
+		case "finishedAt":
+
+			out.Values[i] = ec._Todo_finishedAt(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
 		case "todoLabels":
 			field := field
 
@@ -4939,6 +5011,21 @@ func (ec *executionContext) marshalNString2ᚖstring(ctx context.Context, sel as
 		return graphql.Null
 	}
 	res := graphql.MarshalString(*v)
+	if res == graphql.Null {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+	}
+	return res
+}
+
+func (ec *executionContext) unmarshalNTime2timeᚐTime(ctx context.Context, v interface{}) (time.Time, error) {
+	res, err := graphql.UnmarshalTime(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNTime2timeᚐTime(ctx context.Context, sel ast.SelectionSet, v time.Time) graphql.Marshaler {
+	res := graphql.MarshalTime(v)
 	if res == graphql.Null {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "the requested element is null which the schema does not allow")

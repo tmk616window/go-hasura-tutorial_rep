@@ -1,4 +1,4 @@
-scalar DateTime
+scalar Time
 
 type Todo {
   id: Int!
@@ -9,6 +9,7 @@ type Todo {
   status: Status!
   priorityID: Int!
   priority: Priority!
+  finishedAt: Time!
   todoLabels: [TodoLabel!]!
 }
 
