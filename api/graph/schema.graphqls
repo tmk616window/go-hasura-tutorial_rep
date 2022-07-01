@@ -53,6 +53,10 @@ input SortTodo {
   sort: Sort!
 }
 
+input  DeleteTodo {
+   id: Int! 
+}
+
 enum Sort {
     asc
     desc
@@ -70,4 +74,5 @@ type Query {
 type Mutation {
   createTodo(input: NewTodo!): Todo!
   createTodoLabel(input: NewTodo!): TodoLabel!
+  deleteTodo(input: DeleteTodo!): Todo!
 }
