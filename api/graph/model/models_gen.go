@@ -44,6 +44,16 @@ type Status struct {
 	Todos []*models.Todo `json:"todos"`
 }
 
+type UpdateTodo struct {
+	ID          int    `json:"id"`
+	Title       string `json:"title"`
+	Description string `json:"description"`
+	StatusID    int    `json:"statusID"`
+	PriorityID  int    `json:"priorityID"`
+	LabelIDs    []int  `json:"labelIDs"`
+	FinishedAt  string `json:"finishedAt"`
+}
+
 type User struct {
 	ID        int            `json:"id"`
 	Name      string         `json:"name"`
