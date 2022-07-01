@@ -47,7 +47,7 @@ func (r *mutationResolver) CreateTodo(ctx context.Context, input model.NewTodo) 
 	if err != nil {
 		return nil, err
 	}
-	servicesTodo.CreateTodoLabelRelation(input.LabelIDs, t.ID, db)
+	servicesTodo.CreateTodoLabel(input.LabelIDs, t.ID, db)
 
 	return t, nil
 }

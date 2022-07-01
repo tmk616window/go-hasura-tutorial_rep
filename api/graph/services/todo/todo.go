@@ -16,7 +16,7 @@ type ValidateTodoType struct {
 	LabelCount  int
 }
 
-func CreateTodoLabelRelation(labelIDs []int, todoID int, db *gorm.DB) {
+func CreateTodoLabel(labelIDs []int, todoID int, db *gorm.DB) {
 	for _, labelID := range labelIDs {
 		db.Create(&models.TodoLabel{
 			LabelID: labelID,
