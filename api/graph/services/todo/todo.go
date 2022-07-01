@@ -42,7 +42,7 @@ func StringToTime(stringFinishTime string) time.Time {
 	return finishTime
 }
 
-func TodoValidate(obj ValidateTodoType) error {
+func ValidateTodo(obj ValidateTodoType) error {
 	if len(obj.Title) > 50 {
 		return errors.New("タイトルは50文字にしてください")
 	}
