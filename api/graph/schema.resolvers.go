@@ -15,6 +15,8 @@ import (
 
 func (r *mutationResolver) CreateTodo(ctx context.Context, input model.NewTodo) (*models.Todo, error) {
 	db := r.Resolver.DB
+	const defaultStatus = 1
+
 	// フォーマット　"2022/6/28 13:00"
 	finishTime, err := servicesTodo.ChangeTypeStringToTypeTime(input.FinishedAt)
 	if err != nil {
@@ -35,9 +37,9 @@ func (r *mutationResolver) CreateTodo(ctx context.Context, input model.NewTodo) 
 	t := &models.Todo{
 		Title:       input.Title,
 		Description: input.Description,
-		UserID:      1,
-		StatusID:    1,
-		PriorityID:  1,
+		UserID:      input.PriorityID,
+		StatusID:    defaultStatus,
+		PriorityID:  input.PriorityID,
 		FinishedAt:  finishTime,
 		CreatedAt:   time.Now(),
 		UpdatedAt:   time.Now(),

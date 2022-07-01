@@ -47,6 +47,8 @@ input NewTodo {
   title: String!
   description: String!
   labelIDs: [Int!]!
+  userID: Int!
+  PriorityID: Int!
   finishedAt: String!
 }
 

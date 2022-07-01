@@ -470,6 +470,8 @@ input NewTodo {
   title: String!
   description: String!
   labelIDs: [Int!]!
+  userID: Int!
+  PriorityID: Int!
   finishedAt: String!
 }
 
@@ -3993,6 +3995,22 @@ func (ec *executionContext) unmarshalInputNewTodo(ctx context.Context, obj inter
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("labelIDs"))
 			it.LabelIDs, err = ec.unmarshalNInt2ᚕintᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "userID":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("userID"))
+			it.UserID, err = ec.unmarshalNInt2int(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "PriorityID":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("PriorityID"))
+			it.PriorityID, err = ec.unmarshalNInt2int(ctx, v)
 			if err != nil {
 				return it, err
 			}

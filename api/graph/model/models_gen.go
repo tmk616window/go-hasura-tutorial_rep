@@ -18,6 +18,8 @@ type NewTodo struct {
 	Title       string `json:"title"`
 	Description string `json:"description"`
 	LabelIDs    []int  `json:"labelIDs"`
+	UserID      int    `json:"userID"`
+	PriorityID  int    `json:"PriorityID"`
 	FinishedAt  string `json:"finishedAt"`
 }
 
