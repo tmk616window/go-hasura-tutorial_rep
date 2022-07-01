@@ -27,7 +27,7 @@ func ChangeTypeStringToTypeTime(stringFinishTime string) (time.Time, error) {
 
 func ValidateTodo(obj ValidateTodoType) error {
 	if len(obj.Title) > 50 {
-		return errors.New("タイトルは50文字にしてください")
+		return errors.New("タイトルは50文字以下にしてください")
 	}
 
 	if len(obj.Description) > 300 {
