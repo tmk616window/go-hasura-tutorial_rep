@@ -31,15 +31,19 @@ func checkFinishTime(finishTime time.Time) time.Duration {
 	return diff
 }
 
-func StringToTime(stringFinishTime string) time.Time {
+func ChangeTypeStringToTypeTime(stringFinishTime string) (time.Time, error) {
 	layout := "2006-01-02 15:04"
 
 	jst := time.FixedZone("Asia/Tokyo", 9*60*60)
 
-	finishTimeUTC, _ := time.Parse(layout, stringFinishTime)
+	finishTimeUTC, err := time.Parse(layout, stringFinishTime)
+	if err != nil {
+		return time.Time{}, err
+	}
+
 	finishTime := finishTimeUTC.In(jst)
 
-	return finishTime
+	return finishTime, nil
 }
 
 func ValidateTodo(obj ValidateTodoType) error {
