@@ -25,7 +25,7 @@ func CreateTodoLabelRelation(labelIDs []int, todoID int, db *gorm.DB) {
 	}
 }
 
-func compareTime(finishTime time.Time) time.Duration {
+func checkFinishTime(finishTime time.Time) time.Duration {
 	now := time.Now()
 	diff := now.Sub(finishTime)
 	return diff
@@ -51,7 +51,7 @@ func ValidateTodo(obj ValidateTodoType) error {
 		return errors.New("説明を300文字以下にしてください")
 	}
 
-	diff := compareTime(obj.FinishTime)
+	diff := checkFinishTime(obj.FinishTime)
 	if diff > 0 {
 		return errors.New("終了期限を現在日時以降にしてください")
 	}
