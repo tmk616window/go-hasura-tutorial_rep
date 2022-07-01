@@ -19,6 +19,17 @@ func (r *mutationResolver) CreateTodoLabel(ctx context.Context, input model.NewT
 	panic(fmt.Errorf("not implemented"))
 }
 
+func (r *mutationResolver) DeleteTodo(ctx context.Context, input model.DeleteTodo) (*models.Todo, error) {
+	db := r.Resolver.DB
+	var todo models.Todo
+	err := db.Delete(todo, input.ID).Error
+	if err != nil {
+		return nil, err
+	}
+
+	return &todo, nil
+}
+
 func (r *queryResolver) GqlgenTodos(ctx context.Context, sortInput *model.SortTodo, searchInput *model.SearchTodo) ([]*models.Todo, error) {
 	var todos []*models.Todo
 	db := r.Resolver.DB
