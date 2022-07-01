@@ -63,12 +63,8 @@ func (r *mutationResolver) CreateTodo(ctx context.Context, input model.NewTodo) 
 func (r *mutationResolver) UpdateTodo(ctx context.Context, input model.UpdateTodo) (*models.Todo, error) {
 	db := r.Resolver.DB
 	todo := models.Todo{}
-	finishTime, err := servicesTodo.ChangeTypeStringToTypeTime(input.FinishedAt)
-	if err != nil {
-		return nil, err
-	}
 
-	err = db.First(&todo, input.ID).Error
+	finishTime, err := servicesTodo.ChangeTypeStringToTypeTime(input.FinishedAt)
 	if err != nil {
 		return nil, err
 	}
@@ -103,9 +99,10 @@ func (r *mutationResolver) UpdateTodo(ctx context.Context, input model.UpdateTod
 		}
 	}
 
-	todo.Description = input.Description
-
-	err = db.Save(&todo).Error
+	err = db.Model(&todo).First(&todo, input.ID).Updates(models.Todo{
+		Title:       input.Title,
+		Description: input.Description,
+	}).Error
 	if err != nil {
 		return nil, err
 	}
