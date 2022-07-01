@@ -72,10 +72,13 @@ func (r *mutationResolver) UpdateTodo(ctx context.Context, input model.UpdateTod
 	var todoLabel []*models.TodoLabel
 	var labelCount int64
 
-	db.
+	err = db.
 		Where("todo_id = ?", input.ID).
 		Find(&todoLabel).
-		Count(&labelCount)
+		Count(&labelCount).Error
+	if err != nil {
+		return nil, err
+	}
 
 	validateTodo := servicesTodo.ValidateTodoType{
 		Title:       input.Title,
