@@ -60,8 +60,57 @@ func (r *mutationResolver) CreateTodo(ctx context.Context, input model.NewTodo) 
 	return t, nil
 }
 
-func (r *mutationResolver) CreateTodoLabel(ctx context.Context, input model.NewTodo) (*models.TodoLabel, error) {
-	panic(fmt.Errorf("not implemented"))
+func (r *mutationResolver) UpdateTodo(ctx context.Context, input model.UpdateTodo) (*models.Todo, error) {
+	db := r.Resolver.DB
+	todo := models.Todo{}
+	finishTime, err := servicesTodo.ChangeTypeStringToTypeTime(input.FinishedAt)
+	if err != nil {
+		return nil, err
+	}
+
+	err = db.First(&todo, input.ID).Error
+	if err != nil {
+		return nil, err
+	}
+
+	var todoLabel []*models.TodoLabel
+	var labelCount int64
+
+	db.
+		Where("todo_id = ?", input.ID).
+		Find(&todoLabel).
+		Count(&labelCount)
+
+	validateTodo := servicesTodo.ValidateTodoType{
+		Title:       input.Title,
+		Description: input.Description,
+		LabelIDs:    input.LabelIDs,
+		FinishTime:  finishTime,
+		LabelCount:  int(labelCount),
+	}
+
+	err = servicesTodo.ValidateTodo(validateTodo)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(input.LabelIDs) != 0 {
+		for _, labelID := range input.LabelIDs {
+			db.Create(&models.TodoLabel{
+				LabelID: labelID,
+				TodoID:  input.ID,
+			})
+		}
+	}
+
+	todo.Description = input.Description
+
+	err = db.Save(&todo).Error
+	if err != nil {
+		return nil, err
+	}
+
+	return &todo, nil
 }
 
 func (r *queryResolver) GqlgenTodos(ctx context.Context, sortInput *model.SortTodo, searchInput *model.SearchTodo) ([]*models.Todo, error) {
@@ -122,3 +171,13 @@ type mutationResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }
 type todoResolver struct{ *Resolver }
 type todoLabelResolver struct{ *Resolver }
+
+// !!! WARNING !!!
+// The code below was going to be deleted when updating resolvers. It has been copied here so you have
+// one last chance to move it out of harms way if you want. There are two reasons this happens:
+//  - When renaming or deleting a resolver the old code will be put in here. You can safely delete
+//    it when you're done.
+//  - You have helper methods in this file. Move them out to keep these resolver files clean.
+func (r *mutationResolver) CreateTodoLabel(ctx context.Context, input model.NewTodo) (*models.TodoLabel, error) {
+	panic(fmt.Errorf("not implemented"))
+}
