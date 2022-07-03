@@ -7,57 +7,42 @@ import (
 	"api/graph/generated"
 	"api/graph/model"
 	"api/graph/models"
-	servicesTodo "api/graph/services/todo"
+	"api/graph/services/common"
+	"api/graph/services/todo"
+	"api/graph/services/todoLabel"
 	"context"
 	"fmt"
-	"time"
 )
 
 func (r *mutationResolver) CreateTodo(ctx context.Context, input model.NewTodo) (*models.Todo, error) {
 	db := r.Resolver.DB
-	const defaultStatus = 1
 
-	// フォーマット　"2022/6/28 13:00"
-	finishTime, err := servicesTodo.ChangeTypeStringToTypeTime(input.FinishedAt)
-	if err != nil {
-		return nil, err
-	}
-
-	err = servicesTodo.ValidateTodo(servicesTodo.ValidateTodoType{
+	err := common.ValidateTodo(common.ValidateTodoType{
 		Title:       input.Title,
 		Description: input.Description,
 		LabelIDs:    input.LabelIDs,
-		FinishTime:  finishTime,
+		FinishTime:  input.FinishedAt,
 		LabelCount:  0,
 	})
 	if err != nil {
 		return nil, err
 	}
 
-	t := &models.Todo{
-		Title:       input.Title,
-		Description: input.Description,
-		UserID:      input.PriorityID,
-		StatusID:    defaultStatus,
-		PriorityID:  input.PriorityID,
-		FinishedAt:  finishTime,
-		CreatedAt:   time.Now(),
-		UpdatedAt:   time.Now(),
-	}
-
-	err = db.Create(t).Error
+	todo, err := todo.CreateTodo(db, input)
 	if err != nil {
 		return nil, err
 	}
 
-	for _, labelID := range input.LabelIDs {
-		db.Create(&models.TodoLabel{
-			LabelID: labelID,
-			TodoID:  t.ID,
-		})
+	if len(input.LabelIDs) != 0 {
+		for _, labelID := range input.LabelIDs {
+			err = todoLabel.CreateTodoLabel(db, labelID, todo.ID)
+			if err != nil {
+				return nil, err
+			}
+		}
 	}
 
-	return t, nil
+	return todo, nil
 }
 
 func (r *mutationResolver) CreateTodoLabel(ctx context.Context, input model.NewTodo) (*models.TodoLabel, error) {
