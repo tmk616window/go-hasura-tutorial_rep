@@ -56,7 +56,7 @@ type ComplexityRoot struct {
 	Mutation struct {
 		CreateTodo      func(childComplexity int, input model.NewTodo) int
 		CreateTodoLabel func(childComplexity int, input model.NewTodo) int
-		DeleteTodo      func(childComplexity int, input model.DeleteTodo) int
+		DeleteTodo      func(childComplexity int, id int) int
 	}
 
 	Priority struct {
@@ -105,7 +105,7 @@ type ComplexityRoot struct {
 type MutationResolver interface {
 	CreateTodo(ctx context.Context, input model.NewTodo) (*models.Todo, error)
 	CreateTodoLabel(ctx context.Context, input model.NewTodo) (*models.TodoLabel, error)
-	DeleteTodo(ctx context.Context, input model.DeleteTodo) (*models.Todo, error)
+	DeleteTodo(ctx context.Context, id int) (*models.Todo, error)
 }
 type QueryResolver interface {
 	GqlgenTodos(ctx context.Context, sortInput *model.SortTodo, searchInput *model.SearchTodo) ([]*models.Todo, error)
@@ -184,7 +184,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.DeleteTodo(childComplexity, args["input"].(model.DeleteTodo)), true
+		return e.complexity.Mutation.DeleteTodo(childComplexity, args["id"].(int)), true
 
 	case "Priority.id":
 		if e.complexity.Priority.ID == nil {
@@ -516,7 +516,7 @@ type Query {
 type Mutation {
   createTodo(input: NewTodo!): Todo!
   createTodoLabel(input: NewTodo!): TodoLabel!
-  deleteTodo(input: DeleteTodo!): Todo!
+  deleteTodo(id: Int!): Todo!
 }
 `, BuiltIn: false},
 }
@@ -559,15 +559,15 @@ func (ec *executionContext) field_Mutation_createTodo_args(ctx context.Context, 
 func (ec *executionContext) field_Mutation_deleteTodo_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 model.DeleteTodo
-	if tmp, ok := rawArgs["input"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNDeleteTodo2apiᚋgraphᚋmodelᚐDeleteTodo(ctx, tmp)
+	var arg0 int
+	if tmp, ok := rawArgs["id"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+		arg0, err = ec.unmarshalNInt2int(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["input"] = arg0
+	args["id"] = arg0
 	return args, nil
 }
 
@@ -916,7 +916,7 @@ func (ec *executionContext) _Mutation_deleteTodo(ctx context.Context, field grap
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().DeleteTodo(rctx, fc.Args["input"].(model.DeleteTodo))
+		return ec.resolvers.Mutation().DeleteTodo(rctx, fc.Args["id"].(int))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -5059,11 +5059,6 @@ func (ec *executionContext) marshalNBoolean2bool(ctx context.Context, sel ast.Se
 		}
 	}
 	return res
-}
-
-func (ec *executionContext) unmarshalNDeleteTodo2apiᚋgraphᚋmodelᚐDeleteTodo(ctx context.Context, v interface{}) (model.DeleteTodo, error) {
-	res, err := ec.unmarshalInputDeleteTodo(ctx, v)
-	return res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) unmarshalNInt2int(ctx context.Context, v interface{}) (int, error) {

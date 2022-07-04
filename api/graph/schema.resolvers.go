@@ -14,6 +14,7 @@ import (
 	"fmt"
 )
 
+// CreateTodo is the resolver for the createTodo field.
 func (r *mutationResolver) CreateTodo(ctx context.Context, input model.NewTodo) (*models.Todo, error) {
 	db := r.Resolver.DB
 
@@ -44,14 +45,16 @@ func (r *mutationResolver) CreateTodo(ctx context.Context, input model.NewTodo) 
 	return todo, nil
 }
 
+// CreateTodoLabel is the resolver for the createTodoLabel field.
 func (r *mutationResolver) CreateTodoLabel(ctx context.Context, input model.NewTodo) (*models.TodoLabel, error) {
 	panic(fmt.Errorf("not implemented"))
 }
 
-func (r *mutationResolver) DeleteTodo(ctx context.Context, input model.DeleteTodo) (*models.Todo, error) {
+// DeleteTodo is the resolver for the deleteTodo field.
+func (r *mutationResolver) DeleteTodo(ctx context.Context, id int) (*models.Todo, error) {
 	db := r.Resolver.DB
 	var todo models.Todo
-	err := db.Delete(todo, input.ID).Error
+	err := db.Delete(todo, id).Error
 	if err != nil {
 		return nil, err
 	}
@@ -59,6 +62,7 @@ func (r *mutationResolver) DeleteTodo(ctx context.Context, input model.DeleteTod
 	return &todo, nil
 }
 
+// GqlgenTodos is the resolver for the gqlgenTodos field.
 func (r *queryResolver) GqlgenTodos(ctx context.Context, sortInput *model.SortTodo, searchInput *model.SearchTodo) ([]*models.Todo, error) {
 	var todos []*models.Todo
 	db := r.Resolver.DB
@@ -73,6 +77,7 @@ func (r *queryResolver) GqlgenTodos(ctx context.Context, sortInput *model.SortTo
 	return todos, nil
 }
 
+// Status is the resolver for the status field.
 func (r *todoResolver) Status(ctx context.Context, obj *models.Todo) (*model.Status, error) {
 	var status model.Status
 	db := r.Resolver.DB
@@ -80,6 +85,7 @@ func (r *todoResolver) Status(ctx context.Context, obj *models.Todo) (*model.Sta
 	return &status, nil
 }
 
+// Priority is the resolver for the priority field.
 func (r *todoResolver) Priority(ctx context.Context, obj *models.Todo) (*model.Priority, error) {
 	var priority model.Priority
 	db := r.Resolver.DB
@@ -87,6 +93,7 @@ func (r *todoResolver) Priority(ctx context.Context, obj *models.Todo) (*model.P
 	return &priority, nil
 }
 
+// TodoLabels is the resolver for the todoLabels field.
 func (r *todoResolver) TodoLabels(ctx context.Context, obj *models.Todo) ([]*models.TodoLabel, error) {
 	var todoLabel []*models.TodoLabel
 	db := r.Resolver.DB
@@ -94,6 +101,7 @@ func (r *todoResolver) TodoLabels(ctx context.Context, obj *models.Todo) ([]*mod
 	return todoLabel, nil
 }
 
+// Label is the resolver for the label field.
 func (r *todoLabelResolver) Label(ctx context.Context, obj *models.TodoLabel) (*model.Label, error) {
 	var label model.Label
 	db := r.Resolver.DB
