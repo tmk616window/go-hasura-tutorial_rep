@@ -14,17 +14,21 @@ type DeleteTodo struct {
 }
 
 type Label struct {
-	ID   string `json:"id"`
+	ID   int    `json:"id"`
 	Name string `json:"name"`
 }
 
 type NewTodo struct {
-	Title       string  `json:"title"`
-	Description *string `json:"description"`
+	Title       string `json:"title"`
+	Description string `json:"description"`
+	LabelIDs    []int  `json:"labelIDs"`
+	UserID      int    `json:"userID"`
+	PriorityID  int    `json:"PriorityID"`
+	FinishedAt  string `json:"finishedAt"`
 }
 
 type Priority struct {
-	ID   string `json:"id"`
+	ID   int    `json:"id"`
 	Name string `json:"name"`
 }
 
@@ -39,13 +43,13 @@ type SortTodo struct {
 }
 
 type Status struct {
-	ID    string         `json:"id"`
+	ID    int            `json:"id"`
 	Name  string         `json:"name"`
 	Todos []*models.Todo `json:"todos"`
 }
 
 type User struct {
-	ID        string         `json:"id"`
+	ID        int            `json:"id"`
 	Name      string         `json:"name"`
 	Todos     []*models.Todo `json:"todos"`
 	SortTodos []*models.Todo `json:"sortTodos"`
