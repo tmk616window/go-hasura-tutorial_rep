@@ -9,6 +9,7 @@ import (
 	"api/graph/models"
 	"api/graph/services/common"
 	createTodoService "api/graph/services/todo/create"
+	updateTodoService "api/graph/services/todo/update"
 	"api/graph/services/todoLabel"
 	"context"
 	"fmt"
@@ -46,55 +47,37 @@ func (r *mutationResolver) CreateTodo(ctx context.Context, input model.NewTodo) 
 
 func (r *mutationResolver) UpdateTodo(ctx context.Context, input model.UpdateTodo) (*models.Todo, error) {
 	db := r.Resolver.DB
-	todo := models.Todo{}
 
-	finishTime, err := servicesTodo.ChangeTypeStringToTypeTime(input.FinishedAt)
+	labelCount, err := common.CountTodoLabel(db, input.ID)
 	if err != nil {
 		return nil, err
 	}
 
-	var todoLabel []*models.TodoLabel
-	var labelCount int64
-
-	err = db.
-		Where("todo_id = ?", input.ID).
-		Find(&todoLabel).
-		Count(&labelCount).Error
-	if err != nil {
-		return nil, err
-	}
-
-	validateTodo := servicesTodo.ValidateTodoType{
+	err = common.ValidateTodo(common.ValidateTodoType{
 		Title:       input.Title,
 		Description: input.Description,
 		LabelIDs:    input.LabelIDs,
-		FinishTime:  finishTime,
+		FinishTime:  input.FinishedAt,
 		LabelCount:  int(labelCount),
-	}
-
-	err = servicesTodo.ValidateTodo(validateTodo)
+	})
 	if err != nil {
 		return nil, err
 	}
 
+	todo, err := updateTodoService.UpdateTodo(db, input)
+	if err != nil {
+		return nil, err
+	}
+
+	// LabelIDsがからの時にエラーが発生するので、条件分岐を入れる
 	if len(input.LabelIDs) != 0 {
-		for _, labelID := range input.LabelIDs {
-			db.Create(&models.TodoLabel{
-				LabelID: labelID,
-				TodoID:  input.ID,
-			})
+		err = todoLabel.CreateTodoLabel(db, input.LabelIDs, todo.ID)
+		if err != nil {
+			return nil, err
 		}
 	}
 
-	err = db.Model(&todo).First(&todo, input.ID).Updates(models.Todo{
-		Title:       input.Title,
-		Description: input.Description,
-	}).Error
-	if err != nil {
-		return nil, err
-	}
-
-	return &todo, nil
+	return todo, nil
 }
 
 func (r *queryResolver) GqlgenTodos(ctx context.Context, sortInput *model.SortTodo, searchInput *model.SearchTodo) ([]*models.Todo, error) {
