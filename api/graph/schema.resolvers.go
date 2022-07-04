@@ -34,11 +34,9 @@ func (r *mutationResolver) CreateTodo(ctx context.Context, input model.NewTodo) 
 	}
 
 	if len(input.LabelIDs) != 0 {
-		for _, labelID := range input.LabelIDs {
-			err = todoLabel.CreateTodoLabel(db, labelID, todo.ID)
-			if err != nil {
-				return nil, err
-			}
+		err = todoLabel.CreateTodoLabel(db, input.LabelIDs, todo.ID)
+		if err != nil {
+			return nil, err
 		}
 	}
 
