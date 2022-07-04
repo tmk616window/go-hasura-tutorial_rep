@@ -7,7 +7,6 @@ import (
 )
 
 func CreateTodoLabel(db *gorm.DB, LabelIDs []int, todoID int) error {
-
 	var todoLabels []*models.TodoLabel
 
 	for _, labelID := range LabelIDs {
