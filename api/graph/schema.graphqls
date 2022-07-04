@@ -74,5 +74,5 @@ type Query {
 type Mutation {
   createTodo(input: NewTodo!): Todo!
   createTodoLabel(input: NewTodo!): TodoLabel!
-  deleteTodo(id: Int!): Todo!
+  deleteTodo(id: Int!): String!
 }

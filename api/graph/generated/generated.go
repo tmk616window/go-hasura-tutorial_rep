@@ -105,7 +105,7 @@ type ComplexityRoot struct {
 type MutationResolver interface {
 	CreateTodo(ctx context.Context, input model.NewTodo) (*models.Todo, error)
 	CreateTodoLabel(ctx context.Context, input model.NewTodo) (*models.TodoLabel, error)
-	DeleteTodo(ctx context.Context, id int) (*models.Todo, error)
+	DeleteTodo(ctx context.Context, id int) (string, error)
 }
 type QueryResolver interface {
 	GqlgenTodos(ctx context.Context, sortInput *model.SortTodo, searchInput *model.SearchTodo) ([]*models.Todo, error)
@@ -511,7 +511,7 @@ type Query {
 type Mutation {
   createTodo(input: NewTodo!): Todo!
   createTodoLabel(input: NewTodo!): TodoLabel!
-  deleteTodo(id: Int!): Todo!
+  deleteTodo(id: Int!): String!
 }
 `, BuiltIn: false},
 }
@@ -923,9 +923,9 @@ func (ec *executionContext) _Mutation_deleteTodo(ctx context.Context, field grap
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*models.Todo)
+	res := resTmp.(string)
 	fc.Result = res
-	return ec.marshalNTodo2ᚖapiᚋgraphᚋmodelsᚐTodo(ctx, field.Selections, res)
+	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Mutation_deleteTodo(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -935,29 +935,7 @@ func (ec *executionContext) fieldContext_Mutation_deleteTodo(ctx context.Context
 		IsMethod:   true,
 		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			switch field.Name {
-			case "id":
-				return ec.fieldContext_Todo_id(ctx, field)
-			case "title":
-				return ec.fieldContext_Todo_title(ctx, field)
-			case "description":
-				return ec.fieldContext_Todo_description(ctx, field)
-			case "userID":
-				return ec.fieldContext_Todo_userID(ctx, field)
-			case "statusID":
-				return ec.fieldContext_Todo_statusID(ctx, field)
-			case "status":
-				return ec.fieldContext_Todo_status(ctx, field)
-			case "priorityID":
-				return ec.fieldContext_Todo_priorityID(ctx, field)
-			case "priority":
-				return ec.fieldContext_Todo_priority(ctx, field)
-			case "finishedAt":
-				return ec.fieldContext_Todo_finishedAt(ctx, field)
-			case "todoLabels":
-				return ec.fieldContext_Todo_todoLabels(ctx, field)
-			}
-			return nil, fmt.Errorf("no field named %q was found under type Todo", field.Name)
+			return nil, errors.New("field of type String does not have child fields")
 		},
 	}
 	defer func() {
