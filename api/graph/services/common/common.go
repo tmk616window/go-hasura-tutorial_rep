@@ -55,12 +55,11 @@ func ChangeStringToTime(stringFinishTime string) (time.Time, error) {
 }
 
 func CountTodoLabel(db *gorm.DB, id int) (int64, error) {
-	var todoLabel []*models.TodoLabel
 	var labelCount int64
 
 	db.
+		Model(&[]*models.TodoLabel{}).
 		Where("todo_id = ?", id).
-		Find(&todoLabel).
 		Count(&labelCount)
 	return labelCount, nil
 }
