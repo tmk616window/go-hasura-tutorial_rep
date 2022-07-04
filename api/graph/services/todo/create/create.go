@@ -1,4 +1,4 @@
-package todo
+package create
 
 import (
 	"api/graph/model"

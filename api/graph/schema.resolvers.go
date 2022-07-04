@@ -8,7 +8,7 @@ import (
 	"api/graph/model"
 	"api/graph/models"
 	"api/graph/services/common"
-	"api/graph/services/todo"
+	createTodoService "api/graph/services/todo/create"
 	"api/graph/services/todoLabel"
 	"context"
 	"fmt"
@@ -28,7 +28,7 @@ func (r *mutationResolver) CreateTodo(ctx context.Context, input model.NewTodo) 
 		return nil, err
 	}
 
-	todo, err := todo.CreateTodo(db, input)
+	todo, err := createTodoService.CreateTodo(db, input)
 	if err != nil {
 		return nil, err
 	}
