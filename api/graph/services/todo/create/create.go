@@ -13,7 +13,7 @@ func CreateTodo(db *gorm.DB, input model.NewTodo) (*models.Todo, error) {
 	const defaultStatus = 1
 
 	// フォーマット　"2022-6-28 13:00"
-	finishTime, err := common.ChangeTypeStringToTypeTime(input.FinishedAt)
+	finishTime, err := common.ChangeStringToTime(input.FinishedAt)
 	if err != nil {
 		return nil, err
 	}

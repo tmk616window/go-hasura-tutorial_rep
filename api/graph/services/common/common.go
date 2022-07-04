@@ -26,7 +26,7 @@ func ValidateTodo(obj ValidateTodoType) error {
 	}
 
 	now := time.Now()
-	finishTime, err := ChangeTypeStringToTypeTime(obj.FinishTime)
+	finishTime, err := ChangeStringToTime(obj.FinishTime)
 	if err != nil {
 		return err
 	}
@@ -42,7 +42,7 @@ func ValidateTodo(obj ValidateTodoType) error {
 	return nil
 }
 
-func ChangeTypeStringToTypeTime(stringFinishTime string) (time.Time, error) {
+func ChangeStringToTime(stringFinishTime string) (time.Time, error) {
 	layout := "2006-01-02 15:04"
 	jst := time.FixedZone("Asia/Tokyo", 9*60*60)
 	finishTimeUTC, err := time.Parse(layout, stringFinishTime)
