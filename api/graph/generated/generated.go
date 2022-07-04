@@ -372,7 +372,6 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 	rc := graphql.GetOperationContext(ctx)
 	ec := executionContext{rc, e}
 	inputUnmarshalMap := graphql.BuildUnmarshalerMap(
-		ec.unmarshalInputDeleteTodo,
 		ec.unmarshalInputNewTodo,
 		ec.unmarshalInputSearchTodo,
 		ec.unmarshalInputSortTodo,
@@ -493,10 +492,6 @@ input NewTodo {
 input SortTodo {
   column: String!
   sort: Sort!
-}
-
-input  DeleteTodo {
-   id: Int! 
 }
 
 enum Sort {
@@ -4076,34 +4071,6 @@ func (ec *executionContext) fieldContext___Type_specifiedByURL(ctx context.Conte
 // endregion **************************** field.gotpl *****************************
 
 // region    **************************** input.gotpl *****************************
-
-func (ec *executionContext) unmarshalInputDeleteTodo(ctx context.Context, obj interface{}) (model.DeleteTodo, error) {
-	var it model.DeleteTodo
-	asMap := map[string]interface{}{}
-	for k, v := range obj.(map[string]interface{}) {
-		asMap[k] = v
-	}
-
-	fieldsInOrder := [...]string{"id"}
-	for _, k := range fieldsInOrder {
-		v, ok := asMap[k]
-		if !ok {
-			continue
-		}
-		switch k {
-		case "id":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
-			it.ID, err = ec.unmarshalNInt2int(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		}
-	}
-
-	return it, nil
-}
 
 func (ec *executionContext) unmarshalInputNewTodo(ctx context.Context, obj interface{}) (model.NewTodo, error) {
 	var it model.NewTodo

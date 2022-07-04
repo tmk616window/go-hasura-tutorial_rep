@@ -9,10 +9,6 @@ import (
 	"strconv"
 )
 
-type DeleteTodo struct {
-	ID int `json:"id"`
-}
-
 type Label struct {
 	ID   int    `json:"id"`
 	Name string `json:"name"`

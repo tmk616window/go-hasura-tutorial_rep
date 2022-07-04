@@ -57,10 +57,6 @@ input SortTodo {
   sort: Sort!
 }
 
-input  DeleteTodo {
-   id: Int! 
-}
-
 enum Sort {
     asc
     desc
