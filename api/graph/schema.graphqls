@@ -73,7 +73,8 @@ input UpdateTodo {
   description: String!
   statusID: Int!
   priorityID: Int!
-  labelIDs: [Int!]!
+  addLabelIDs: [Int!]!
+  deleteLabelIDs: [Int!]!
   finishedAt: String!
 }
 

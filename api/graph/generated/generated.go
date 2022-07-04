@@ -497,7 +497,8 @@ input UpdateTodo {
   description: String!
   statusID: Int!
   priorityID: Int!
-  labelIDs: [Int!]!
+  addLabelIDs: [Int!]!
+  deleteLabelIDs: [Int!]!
   finishedAt: String!
 }
 
@@ -3995,7 +3996,12 @@ func (ec *executionContext) unmarshalInputNewTodo(ctx context.Context, obj inter
 		asMap[k] = v
 	}
 
-	for k, v := range asMap {
+	fieldsInOrder := [...]string{"title", "description", "labelIDs", "userID", "PriorityID", "finishedAt"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
 		switch k {
 		case "title":
 			var err error
@@ -4058,7 +4064,12 @@ func (ec *executionContext) unmarshalInputSearchTodo(ctx context.Context, obj in
 		asMap[k] = v
 	}
 
-	for k, v := range asMap {
+	fieldsInOrder := [...]string{"column", "value"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
 		switch k {
 		case "column":
 			var err error
@@ -4089,7 +4100,12 @@ func (ec *executionContext) unmarshalInputSortTodo(ctx context.Context, obj inte
 		asMap[k] = v
 	}
 
-	for k, v := range asMap {
+	fieldsInOrder := [...]string{"column", "sort"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
 		switch k {
 		case "column":
 			var err error
@@ -4120,7 +4136,12 @@ func (ec *executionContext) unmarshalInputUpdateTodo(ctx context.Context, obj in
 		asMap[k] = v
 	}
 
-	for k, v := range asMap {
+	fieldsInOrder := [...]string{"id", "title", "description", "statusID", "priorityID", "addLabelIDs", "deleteLabelIDs", "finishedAt"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
 		switch k {
 		case "id":
 			var err error
@@ -4162,11 +4183,19 @@ func (ec *executionContext) unmarshalInputUpdateTodo(ctx context.Context, obj in
 			if err != nil {
 				return it, err
 			}
-		case "labelIDs":
+		case "addLabelIDs":
 			var err error
 
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("labelIDs"))
-			it.LabelIDs, err = ec.unmarshalNInt2ᚕintᚄ(ctx, v)
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("addLabelIDs"))
+			it.AddLabelIDs, err = ec.unmarshalNInt2ᚕintᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "deleteLabelIDs":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("deleteLabelIDs"))
+			it.DeleteLabelIDs, err = ec.unmarshalNInt2ᚕintᚄ(ctx, v)
 			if err != nil {
 				return it, err
 			}
