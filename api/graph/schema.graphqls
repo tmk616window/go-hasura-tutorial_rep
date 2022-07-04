@@ -1,7 +1,7 @@
-scalar DateTime
+scalar Time
 
 type Todo {
-  id: ID!
+  id: Int!
   title: String!
   description: String!
   userID: Int!
@@ -9,35 +9,35 @@ type Todo {
   status: Status!
   priorityID: Int!
   priority: Priority!
-  finished_at: String!
+  finishedAt: Time!
   todoLabels: [TodoLabel!]!
 }
 
 type User {
-  id: ID!
+  id: Int!
   name: String!
   todos: [Todo!]!
   sortTodos(column: String, value: String): [Todo!]!
 }
 
 type Status {
-  id: ID!
+  id: Int!
   name: String!
   todos: [Todo!]!
 }
 
 type Priority {
-  id: ID!
+  id: Int!
   name: String!
 }
 
 type Label {
-  id: ID!
+  id: Int!
   name: String!
 }
 
 type TodoLabel {
-  id: ID!
+  id: Int!
   todoID: Int!
   labelID: Int!
   label: Label!
@@ -45,7 +45,11 @@ type TodoLabel {
 
 input NewTodo {
   title: String!
-  description: String
+  description: String!
+  labelIDs: [Int!]!
+  userID: Int!
+  PriorityID: Int!
+  finishedAt: String!
 }
 
 input SortTodo {

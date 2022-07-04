@@ -7,12 +7,41 @@ import (
 	"api/graph/generated"
 	"api/graph/model"
 	"api/graph/models"
+	"api/graph/services/common"
+	createTodoService "api/graph/services/todo/create"
+	"api/graph/services/todoLabel"
 	"context"
 	"fmt"
 )
 
 func (r *mutationResolver) CreateTodo(ctx context.Context, input model.NewTodo) (*models.Todo, error) {
-	panic(fmt.Errorf("not implemented"))
+	db := r.Resolver.DB
+
+	err := common.ValidateTodo(common.ValidateTodoType{
+		Title:       input.Title,
+		Description: input.Description,
+		LabelIDs:    input.LabelIDs,
+		FinishTime:  input.FinishedAt,
+		LabelCount:  0,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	todo, err := createTodoService.CreateTodo(db, input)
+	if err != nil {
+		return nil, err
+	}
+
+	// LabelIDsがからの時にエラーが発生するので、条件分岐を入れる
+	if len(input.LabelIDs) != 0 {
+		err = todoLabel.CreateTodoLabel(db, input.LabelIDs, todo.ID)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	return todo, nil
 }
 
 func (r *mutationResolver) CreateTodoLabel(ctx context.Context, input model.NewTodo) (*models.TodoLabel, error) {
