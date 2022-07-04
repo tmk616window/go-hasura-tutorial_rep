@@ -33,6 +33,7 @@ func (r *mutationResolver) CreateTodo(ctx context.Context, input model.NewTodo) 
 		return nil, err
 	}
 
+	// LabelIDsがからの時にエラーが発生するので、条件分岐を入れる
 	if len(input.LabelIDs) != 0 {
 		err = todoLabel.CreateTodoLabel(db, input.LabelIDs, todo.ID)
 		if err != nil {
