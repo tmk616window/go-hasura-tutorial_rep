@@ -11,6 +11,7 @@ import (
 	createTodoService "api/graph/services/todo/create"
 	updateTodoService "api/graph/services/todo/update"
 	createTodoLabelService "api/graph/services/todoLabel/create"
+	deleteTodoLabelService "api/graph/services/todoLabel/delete"
 	"context"
 )
 
@@ -73,6 +74,14 @@ func (r *mutationResolver) UpdateTodo(ctx context.Context, input model.UpdateTod
 	// LabelIDsがからの時にエラーが発生するので、条件分岐を入れる
 	if len(input.AddLabelIDs) != 0 {
 		err = createTodoLabelService.CreateTodoLabel(db, input.AddLabelIDs, todo.ID)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	// LabelIDsがからの時にエラーが発生するので、条件分岐を入れる
+	if len(input.DeleteLabelIDs) != 0 {
+		err = deleteTodoLabelService.DeleteTodoLabel(db, input.DeleteLabelIDs, todo.ID)
 		if err != nil {
 			return nil, err
 		}
