@@ -2,9 +2,10 @@ package graph
 
 import (
 	"api/graph/generated"
+	"api/graph/model"
 	"api/graph/models"
-	"api/graph/services/common"
 	"api/graph/test/util"
+	"context"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -60,63 +61,101 @@ func (s *GraphTestSuite) TestCreateTodo() {
 		description := "testDescription"
 		userID := 1
 		priorityID := 1
-		statusID := 1
-		finishedTimeTypeString := "2024-6-28 13:00"
-		finishTimeTypeTime, _ := common.ChangeStringToTime(finishedTimeTypeString)
+		finishedTimeString := "2024-01-02 15:04"
 
-		object := &models.Todo{
+		object := model.NewTodo{
 			Title:       title,
 			Description: description,
 			UserID:      userID,
-			StatusID:    statusID,
 			PriorityID:  priorityID,
-			FinishedAt:  finishTimeTypeTime,
+			FinishedAt:  finishedTimeString,
 		}
-		db.Create(object)
+		result, _ := s.mutationResolver.CreateTodo(context.Background(), object)
 
 		var todo models.Todo
 		db.Last(&todo)
 
-		assert.Equal(s.T(), object.Title, todo.Title)
-		assert.Equal(s.T(), object.Description, todo.Description)
-		assert.Equal(s.T(), object.PriorityID, todo.PriorityID)
-		assert.Equal(s.T(), object.StatusID, todo.StatusID)
-		// s.test.Fail()
+		assert.Equal(s.T(), result.Title, todo.Title)
+		assert.Equal(s.T(), result.Description, todo.Description)
+		assert.Equal(s.T(), result.PriorityID, todo.PriorityID)
+		assert.Equal(s.T(), result.StatusID, todo.StatusID)
+
 	})
 
 	s.Run("異常系", func() {
 		s.Run("タイトルが50字以上であればエラーを返す", func() {
-			title := "testTitletestTitletestTitletestTitletestTitletestTitletestTitletestTitletestTitletestTitletestTitletestTitletestTitletestTitletestTitle"
+			title := "testTitletestTitletestTitletestTitletestTitletestTitletestTitletestTitletestTitletestTitletestTitletestTitletestTitletestTitletestTitletestTitletestTitletestTitletestTitletestTitletestTitletestTitletestTitletestTitletestTitletestTitletestTitletestTitletestTitletestTitletestTitletestTitletestTitletestTitletestTitletestTitletestTitletestTitletestTitletestTitletestTitletestTitletestTitletestTitle"
 			description := "testDescription"
 			userID := 1
 			priorityID := 1
-			statusID := 1
-			finishedTimeTypeString := "2024/6/28 13:00"
-			finishTimeTypeTime, _ := common.ChangeStringToTime(finishedTimeTypeString)
+			finishedTimeString := "2024-01-02 15:04"
 
-			object := &models.Todo{
+			object := model.NewTodo{
 				Title:       title,
 				Description: description,
 				UserID:      userID,
-				StatusID:    statusID,
 				PriorityID:  priorityID,
-				FinishedAt:  finishTimeTypeTime,
+				FinishedAt:  finishedTimeString,
 			}
-			db.Create(object)
+			_, err := s.mutationResolver.CreateTodo(context.Background(), object)
+			assert.Equal(s.T(), err.Error(), "タイトルは50文字以下にしてください")
 
 		})
 
 		s.Run("説明文が300字以上", func() {
+			title := "testTitle"
+			description := "testDescriptiontestDescriptiontestDescriptiontestDescriptiontestDescriptiontestDescriptiontestDescriptiontestDescriptiontestDescriptiontestDescriptiontestDescriptiontestDescriptiontestDescriptiontestDescriptiontestDescriptiontestDescriptiontestDescriptiontestDescriptiontestDescriptiontestDescriptiontestDescriptiontestDescriptiontestDescriptiontestDescriptiontestDescriptiontestDescriptiontestDescription"
+			userID := 1
+			priorityID := 1
+			finishedTimeString := "2024-01-02 15:04"
 
+			object := model.NewTodo{
+				Title:       title,
+				Description: description,
+				UserID:      userID,
+				PriorityID:  priorityID,
+				FinishedAt:  finishedTimeString,
+			}
+			_, err := s.mutationResolver.CreateTodo(context.Background(), object)
+			assert.Equal(s.T(), err.Error(), "説明を300文字以下にしてください")
 		})
 
 		s.Run("ラベルの登録が5つ以上の時にエラーが発生する", func() {
+			title := "testTitle"
+			description := "testDescription"
+			userID := 1
+			priorityID := 1
+			finishedTimeString := "2024-01-02 15:04"
+			labelIDs := []int{1, 2, 3, 4, 5, 6}
 
+			object := model.NewTodo{
+				Title:       title,
+				Description: description,
+				UserID:      userID,
+				LabelIDs:    labelIDs,
+				PriorityID:  priorityID,
+				FinishedAt:  finishedTimeString,
+			}
+			_, err := s.mutationResolver.CreateTodo(context.Background(), object)
+			assert.Equal(s.T(), err.Error(), "labelは登録できるのは5つまでです。")
 		})
 
 		s.Run("終了時間は現在時刻以前にするとエラーが発生する", func() {
+			title := "testTitle"
+			description := "testDescription"
+			userID := 1
+			priorityID := 1
+			finishedTimeString := "2020-01-02 15:04"
 
+			object := model.NewTodo{
+				Title:       title,
+				Description: description,
+				UserID:      userID,
+				PriorityID:  priorityID,
+				FinishedAt:  finishedTimeString,
+			}
+			_, err := s.mutationResolver.CreateTodo(context.Background(), object)
+			assert.Equal(s.T(), err.Error(), "終了期限を現在日時以降にしてください")
 		})
 	})
-
 }
