@@ -67,11 +67,22 @@ input SearchTodo {
   value: String!
 }
 
+input UpdateTodo {
+  id: Int!
+  title: String!
+  description: String!
+  statusID: Int!
+  priorityID: Int!
+  addLabelIDs: [Int!]!
+  deleteLabelIDs: [Int!]!
+  finishedAt: String!
+}
+
 type Query {
   gqlgenTodos(sortInput: SortTodo,searchInput: SearchTodo): [Todo!]!
 }
 
 type Mutation {
   createTodo(input: NewTodo!): Todo!
-  createTodoLabel(input: NewTodo!): TodoLabel!
+  updateTodo(input: UpdateTodo!): Todo!
 }
