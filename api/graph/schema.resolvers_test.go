@@ -112,7 +112,7 @@ func (s *GraphTestSuite) TestCreateTodo() {
 
 		})
 
-		s.Run("説明文が300字以上", func() {
+		s.Run("説明文が300字以上であればエラーを返す", func() {
 			title := "testTitle"
 			description := "testDescriptiontestDescriptiontestDescriptiontestDescriptiontestDescriptiontestDescriptiontestDescriptiontestDescriptiontestDescriptiontestDescriptiontestDescriptiontestDescriptiontestDescriptiontestDescriptiontestDescriptiontestDescriptiontestDescriptiontestDescriptiontestDescriptiontestDescriptiontestDescriptiontestDescriptiontestDescriptiontestDescriptiontestDescriptiontestDescriptiontestDescription"
 			userID := 1
