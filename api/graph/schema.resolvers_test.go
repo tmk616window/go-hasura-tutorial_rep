@@ -181,9 +181,14 @@ func (s *GraphTestSuite) TestUpdateTodo() {
 		}
 		result, _ := s.mutationResolver.UpdateTodo(context.Background(), object)
 
+		var todo models.Todo
+		db.Find(&todo, id)
+
 		assert.Equal(s.T(), result.ID, id)
 		assert.Equal(s.T(), result.Title, title)
 		assert.Equal(s.T(), result.Description, description)
+		assert.Equal(s.T(), result.Title, todo.Title)
+		assert.Equal(s.T(), result.Description, todo.Description)
 	})
 
 	s.Run("異常系", func() {
