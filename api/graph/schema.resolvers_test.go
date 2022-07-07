@@ -305,13 +305,7 @@ func (s *GraphTestSuite) TestDeleteTodo() {
 func (s *GraphTestSuite) TestGetStatus() {
 	db := s.resolver.DB
 	s.Run("正常系", func() {
-		todo, _ := createTodoService.CreateTodo(db, model.NewTodo{
-			Title:       "testTitle",
-			Description: "testDescription",
-			UserID:      1,
-			PriorityID:  1,
-			FinishedAt:  "2024-01-02 15:04",
-		})
+		todo := factory.NewTodo(db)
 
 		result, _ := s.todoResolver.Status(context.Background(), todo)
 
@@ -325,13 +319,7 @@ func (s *GraphTestSuite) TestGetStatus() {
 func (s *GraphTestSuite) TestGetPriority() {
 	db := s.resolver.DB
 	s.Run("正常系", func() {
-		todo, _ := createTodoService.CreateTodo(db, model.NewTodo{
-			Title:       "testTitle",
-			Description: "testDescription",
-			UserID:      1,
-			PriorityID:  1,
-			FinishedAt:  "2024-01-02 15:04",
-		})
+		todo := factory.NewTodo(db)
 
 		result, _ := s.todoResolver.Priority(context.Background(), todo)
 
@@ -345,14 +333,7 @@ func (s *GraphTestSuite) TestGetPriority() {
 func (s *GraphTestSuite) TestGetTodoLabels() {
 	db := s.resolver.DB
 	s.Run("正常系", func() {
-		todo, _ := s.mutationResolver.CreateTodo(context.Background(), model.NewTodo{
-			Title:       "testTitle",
-			Description: "testDescription",
-			UserID:      1,
-			PriorityID:  1,
-			LabelIDs:    []int{1, 2, 3},
-			FinishedAt:  "2024-01-02 15:04",
-		})
+		todo := factory.NewTodo(db)
 
 		result, _ := s.todoResolver.TodoLabels(context.Background(), todo)
 
@@ -365,14 +346,7 @@ func (s *GraphTestSuite) TestGetTodoLabels() {
 func (s *GraphTestSuite) TestGetLabel() {
 	db := s.resolver.DB
 	s.Run("正常系", func() {
-		todo, _ := s.mutationResolver.CreateTodo(context.Background(), model.NewTodo{
-			Title:       "testTitle",
-			Description: "testDescription",
-			UserID:      1,
-			PriorityID:  1,
-			LabelIDs:    []int{1, 2, 3},
-			FinishedAt:  "2024-01-02 15:04",
-		})
+		todo := factory.NewTodo(db)
 
 		results, _ := s.todoResolver.TodoLabels(context.Background(), todo)
 
