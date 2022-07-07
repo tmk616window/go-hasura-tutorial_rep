@@ -6,6 +6,7 @@ import (
 	"api/graph/models"
 	createTodoService "api/graph/services/todo/create"
 	"api/graph/test/util"
+	"api/graph/test/util/factory"
 	"context"
 	"testing"
 
@@ -155,14 +156,14 @@ func (s *GraphTestSuite) TestCreateTodo() {
 
 func (s *GraphTestSuite) TestUpdateTodo() {
 	db := s.resolver.DB
+	todo, _ := createTodoService.CreateTodo(db, model.NewTodo{
+		Title:       "testTitle",
+		Description: "testDescription",
+		UserID:      1,
+		PriorityID:  1,
+		FinishedAt:  "2024-01-02 15:04",
+	})
 	s.Run("正常系", func() {
-		todo, _ := createTodoService.CreateTodo(db, model.NewTodo{
-			Title:       "testTitle",
-			Description: "testDescription",
-			UserID:      1,
-			PriorityID:  1,
-			FinishedAt:  "2024-01-02 15:04",
-		})
 		id := todo.ID
 		title := "updateTitle"
 		description := "updateDescription"
@@ -183,15 +184,6 @@ func (s *GraphTestSuite) TestUpdateTodo() {
 
 	s.Run("異常系", func() {
 		s.Run("タイトルが50字以上であればエラーを返す", func() {
-
-			todo, _ := createTodoService.CreateTodo(db, model.NewTodo{
-				Title:       "testTitle",
-				Description: "testDescription",
-				UserID:      1,
-				PriorityID:  1,
-				FinishedAt:  "2024-01-02 15:04",
-			})
-
 			id := todo.ID
 			title := "testTitletestTitletestTitletestTitletestTitletestTitletestTitletestTitletestTitletestTitletestTitletestTitletestTitletestTitletestTitletestTitletestTitletestTitletestTitletestTitletestTitletestTitletestTitletestTitletestTitletestTitletestTitletestTitletestTitletestTitletestTitletestTitletestTitletestTitletestTitletestTitletestTitletestTitletestTitletestTitletestTitletestTitletestTitletestTitle"
 
@@ -205,14 +197,6 @@ func (s *GraphTestSuite) TestUpdateTodo() {
 		})
 
 		s.Run("説明文が300字以上であればエラーを返す", func() {
-			todo, _ := createTodoService.CreateTodo(db, model.NewTodo{
-				Title:       "testTitle",
-				Description: "testDescription",
-				UserID:      1,
-				PriorityID:  1,
-				FinishedAt:  "2024-01-02 15:04",
-			})
-
 			id := todo.ID
 			description := "testDescriptiontestDescriptiontestDescriptiontestDescriptiontestDescriptiontestDescriptiontestDescriptiontestDescriptiontestDescriptiontestDescriptiontestDescriptiontestDescriptiontestDescriptiontestDescriptiontestDescriptiontestDescriptiontestDescriptiontestDescriptiontestDescriptiontestDescriptiontestDescriptiontestDescriptiontestDescriptiontestDescriptiontestDescriptiontestDescriptiontestDescription"
 
@@ -226,14 +210,7 @@ func (s *GraphTestSuite) TestUpdateTodo() {
 		})
 
 		s.Run("ラベルの登録が5つ以上の時にエラーが発生する", func() {
-			todo, _ := s.mutationResolver.CreateTodo(context.Background(), model.NewTodo{
-				Title:       "testTitle",
-				Description: "testDescription",
-				UserID:      1,
-				PriorityID:  1,
-				LabelIDs:    []int{1, 2, 3},
-				FinishedAt:  "2024-01-02 15:04",
-			})
+			todo := factory.NewTodo(db)
 
 			id := todo.ID
 			addLabelIDs := []int{4, 5, 6}
@@ -251,14 +228,6 @@ func (s *GraphTestSuite) TestUpdateTodo() {
 		})
 
 		s.Run("終了時間は現在時刻以前にするとエラーが発生する", func() {
-			todo, _ := createTodoService.CreateTodo(db, model.NewTodo{
-				Title:       "testTitle",
-				Description: "testDescription",
-				UserID:      1,
-				PriorityID:  1,
-				FinishedAt:  "2024-01-02 15:04",
-			})
-
 			id := todo.ID
 			finishTimeString := "2020-01-02 15:04"
 
