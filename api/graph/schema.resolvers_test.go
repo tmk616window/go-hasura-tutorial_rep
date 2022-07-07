@@ -367,3 +367,25 @@ func (s *GraphTestSuite) TestGetTodoLabels() {
 		assert.Equal(s.T(), result, todoLabel)
 	})
 }
+
+func (s *GraphTestSuite) TestGetLabel() {
+	db := s.resolver.DB
+	s.Run("正常系", func() {
+		todo, _ := s.mutationResolver.CreateTodo(context.Background(), model.NewTodo{
+			Title:       "testTitle",
+			Description: "testDescription",
+			UserID:      1,
+			PriorityID:  1,
+			LabelIDs:    []int{1, 2, 3},
+			FinishedAt:  "2024-01-02 15:04",
+		})
+
+		results, _ := s.todoResolver.TodoLabels(context.Background(), todo)
+
+		for _, result := range results {
+			var label model.Label
+			db.First(&label, result.LabelID)
+			assert.Equal(s.T(), result.LabelID, label.ID)
+		}
+	})
+}
