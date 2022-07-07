@@ -50,6 +50,20 @@ func (s *GraphTestSuite) SetupSuite() {
 	s.SetupDB()
 }
 
+func (s *GraphTestSuite) TestGetTodo() {
+	db := s.resolver.DB
+	s.Run("正常系", func() {
+		var sortInput *model.SortTodo
+		var searchInput *model.SearchTodo
+
+		result, _ := s.queryResolver.GqlgenTodos(context.Background(), sortInput, searchInput)
+
+		var todos []*models.Todo
+		db.Find(&todos)
+		assert.Equal(s.T(), result, todos)
+	})
+}
+
 func (s *GraphTestSuite) TestCreateTodo() {
 	db := s.resolver.DB
 	s.Run("正常系", func() {
