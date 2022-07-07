@@ -53,13 +53,13 @@ func (r *mutationResolver) CreateTodoLabel(ctx context.Context, input model.NewT
 // DeleteTodo is the resolver for the deleteTodo field.
 func (r *mutationResolver) DeleteTodo(ctx context.Context, id int) (string, error) {
 	successDelete := "削除が完了しました"
-	fatalDelete := "削除が失敗しました"
+	failureDelete := "削除が失敗しました"
 
 	db := r.Resolver.DB
 	var todo models.Todo
 	err := db.Delete(todo, id).Error
 	if err != nil {
-		return fatalDelete, err
+		return failureDelete, err
 	}
 
 	return successDelete, nil
