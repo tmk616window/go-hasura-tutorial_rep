@@ -53,6 +53,9 @@ func (s *GraphTestSuite) SetupSuite() {
 
 func (s *GraphTestSuite) TestGetTodo() {
 	db := s.resolver.DB
+	for i := 0; i < 5; i++ {
+		_ = factory.NewTodo(db)
+	}
 	s.Run("正常系", func() {
 		var sortInput *model.SortTodo
 		var searchInput *model.SearchTodo
@@ -62,6 +65,37 @@ func (s *GraphTestSuite) TestGetTodo() {
 		var todos []*models.Todo
 		db.Find(&todos)
 		assert.Equal(s.T(), result, todos)
+	})
+
+	s.Run("並び替え", func() {
+		sortInput := &model.SortTodo{
+			Column: "id",
+			Sort:   model.SortDesc,
+		}
+		var searchInput *model.SearchTodo
+		results, _ := s.queryResolver.GqlgenTodos(context.Background(), sortInput, searchInput)
+
+		var todos []*models.Todo
+		db.Order(sortInput.Column + " " + string(sortInput.Sort)).Find(&todos)
+
+		assert.Equal(s.T(), results, todos)
+
+	})
+
+	s.Run("検索", func() {
+		var sortInput *model.SortTodo
+		searchInput := &model.SearchTodo{
+			Column: "title",
+			Value:  "time",
+		}
+		results, _ := s.queryResolver.GqlgenTodos(context.Background(), sortInput, searchInput)
+
+		var todos []*models.Todo
+		db.Where(searchInput.Column+" = ?", searchInput.Value).Find(&todos)
+		for _, result := range results {
+			assert.Equal(s.T(), result.Title, "time")
+		}
+		assert.Equal(s.T(), results, todos)
 	})
 }
 
