@@ -9,12 +9,12 @@ import (
 	"api/graph/models"
 	"api/graph/services/common"
 	createTodoService "api/graph/services/todo/create"
-	"api/graph/services/todoLabel"
+	updateTodoService "api/graph/services/todo/update"
+	createTodoLabelService "api/graph/services/todoLabel/create"
+	deleteTodoLabelService "api/graph/services/todoLabel/delete"
 	"context"
-	"fmt"
 )
 
-// CreateTodo is the resolver for the createTodo field.
 func (r *mutationResolver) CreateTodo(ctx context.Context, input model.NewTodo) (*models.Todo, error) {
 	db := r.Resolver.DB
 
@@ -36,18 +36,13 @@ func (r *mutationResolver) CreateTodo(ctx context.Context, input model.NewTodo) 
 
 	// LabelIDsがからの時にエラーが発生するので、条件分岐を入れる
 	if len(input.LabelIDs) != 0 {
-		err = todoLabel.CreateTodoLabel(db, input.LabelIDs, todo.ID)
+		err = createTodoLabelService.CreateTodoLabel(db, input.LabelIDs, todo.ID)
 		if err != nil {
 			return nil, err
 		}
 	}
 
 	return todo, nil
-}
-
-// CreateTodoLabel is the resolver for the createTodoLabel field.
-func (r *mutationResolver) CreateTodoLabel(ctx context.Context, input model.NewTodo) (*models.TodoLabel, error) {
-	panic(fmt.Errorf("not implemented"))
 }
 
 // DeleteTodo is the resolver for the deleteTodo field.
@@ -65,7 +60,49 @@ func (r *mutationResolver) DeleteTodo(ctx context.Context, id int) (string, erro
 	return successDelete, nil
 }
 
-// GqlgenTodos is the resolver for the gqlgenTodos field.
+func (r *mutationResolver) UpdateTodo(ctx context.Context, input model.UpdateTodo) (*models.Todo, error) {
+	db := r.Resolver.DB
+
+	labelCount, err := common.CountTodoLabel(db, input.ID)
+	if err != nil {
+		return nil, err
+	}
+
+	err = common.ValidateTodo(common.ValidateTodoType{
+		Title:       input.Title,
+		Description: input.Description,
+		LabelIDs:    input.AddLabelIDs,
+		FinishTime:  input.FinishedAt,
+		LabelCount:  int(labelCount),
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	todo, err := updateTodoService.UpdateTodo(db, input)
+	if err != nil {
+		return nil, err
+	}
+
+	// LabelIDsがからの時にエラーが発生するので、条件分岐を入れる
+	if len(input.AddLabelIDs) != 0 {
+		err = createTodoLabelService.CreateTodoLabel(db, input.AddLabelIDs, todo.ID)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	// LabelIDsがからの時にエラーが発生するので、条件分岐を入れる
+	if len(input.DeleteLabelIDs) != 0 {
+		err = deleteTodoLabelService.DeleteTodoLabel(db, input.DeleteLabelIDs, todo.ID)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	return todo, nil
+}
+
 func (r *queryResolver) GqlgenTodos(ctx context.Context, sortInput *model.SortTodo, searchInput *model.SearchTodo) ([]*models.Todo, error) {
 	var todos []*models.Todo
 	db := r.Resolver.DB
@@ -80,7 +117,6 @@ func (r *queryResolver) GqlgenTodos(ctx context.Context, sortInput *model.SortTo
 	return todos, nil
 }
 
-// Status is the resolver for the status field.
 func (r *todoResolver) Status(ctx context.Context, obj *models.Todo) (*model.Status, error) {
 	var status model.Status
 	db := r.Resolver.DB
@@ -88,7 +124,6 @@ func (r *todoResolver) Status(ctx context.Context, obj *models.Todo) (*model.Sta
 	return &status, nil
 }
 
-// Priority is the resolver for the priority field.
 func (r *todoResolver) Priority(ctx context.Context, obj *models.Todo) (*model.Priority, error) {
 	var priority model.Priority
 	db := r.Resolver.DB
@@ -96,7 +131,6 @@ func (r *todoResolver) Priority(ctx context.Context, obj *models.Todo) (*model.P
 	return &priority, nil
 }
 
-// TodoLabels is the resolver for the todoLabels field.
 func (r *todoResolver) TodoLabels(ctx context.Context, obj *models.Todo) ([]*models.TodoLabel, error) {
 	var todoLabel []*models.TodoLabel
 	db := r.Resolver.DB
@@ -104,7 +138,6 @@ func (r *todoResolver) TodoLabels(ctx context.Context, obj *models.Todo) ([]*mod
 	return todoLabel, nil
 }
 
-// Label is the resolver for the label field.
 func (r *todoLabelResolver) Label(ctx context.Context, obj *models.TodoLabel) (*model.Label, error) {
 	var label model.Label
 	db := r.Resolver.DB

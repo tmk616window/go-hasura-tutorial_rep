@@ -55,8 +55,8 @@ type ComplexityRoot struct {
 
 	Mutation struct {
 		CreateTodo      func(childComplexity int, input model.NewTodo) int
-		CreateTodoLabel func(childComplexity int, input model.NewTodo) int
 		DeleteTodo      func(childComplexity int, id int) int
+		UpdateTodo func(childComplexity int, input model.UpdateTodo) int
 	}
 
 	Priority struct {
@@ -104,8 +104,8 @@ type ComplexityRoot struct {
 
 type MutationResolver interface {
 	CreateTodo(ctx context.Context, input model.NewTodo) (*models.Todo, error)
-	CreateTodoLabel(ctx context.Context, input model.NewTodo) (*models.TodoLabel, error)
 	DeleteTodo(ctx context.Context, id int) (string, error)
+	UpdateTodo(ctx context.Context, input model.UpdateTodo) (*models.Todo, error)
 }
 type QueryResolver interface {
 	GqlgenTodos(ctx context.Context, sortInput *model.SortTodo, searchInput *model.SearchTodo) ([]*models.Todo, error)
@@ -162,17 +162,17 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.CreateTodo(childComplexity, args["input"].(model.NewTodo)), true
 
-	case "Mutation.createTodoLabel":
-		if e.complexity.Mutation.CreateTodoLabel == nil {
+	case "Mutation.updateTodo":
+		if e.complexity.Mutation.UpdateTodo == nil {
 			break
 		}
 
-		args, err := ec.field_Mutation_createTodoLabel_args(context.TODO(), rawArgs)
+		args, err := ec.field_Mutation_updateTodo_args(context.TODO(), rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
-		return e.complexity.Mutation.CreateTodoLabel(childComplexity, args["input"].(model.NewTodo)), true
+		return e.complexity.Mutation.UpdateTodo(childComplexity, args["input"].(model.UpdateTodo)), true
 
 	case "Mutation.deleteTodo":
 		if e.complexity.Mutation.DeleteTodo == nil {
@@ -375,6 +375,7 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 		ec.unmarshalInputNewTodo,
 		ec.unmarshalInputSearchTodo,
 		ec.unmarshalInputSortTodo,
+		ec.unmarshalInputUpdateTodo,
 	)
 	first := true
 
@@ -504,14 +505,25 @@ input SearchTodo {
   value: String!
 }
 
+input UpdateTodo {
+  id: Int!
+  title: String!
+  description: String!
+  statusID: Int!
+  priorityID: Int!
+  addLabelIDs: [Int!]!
+  deleteLabelIDs: [Int!]!
+  finishedAt: String!
+}
+
 type Query {
   gqlgenTodos(sortInput: SortTodo,searchInput: SearchTodo): [Todo!]!
 }
 
 type Mutation {
   createTodo(input: NewTodo!): Todo!
-  createTodoLabel(input: NewTodo!): TodoLabel!
   deleteTodo(id: Int!): String!
+  updateTodo(input: UpdateTodo!): Todo!
 }
 `, BuiltIn: false},
 }
@@ -521,7 +533,7 @@ var parsedSchema = gqlparser.MustLoadSchema(sources...)
 
 // region    ***************************** args.gotpl *****************************
 
-func (ec *executionContext) field_Mutation_createTodoLabel_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Mutation_createTodo_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
 	var arg0 model.NewTodo
@@ -536,13 +548,13 @@ func (ec *executionContext) field_Mutation_createTodoLabel_args(ctx context.Cont
 	return args, nil
 }
 
-func (ec *executionContext) field_Mutation_createTodo_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Mutation_updateTodo_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 model.NewTodo
+	var arg0 model.UpdateTodo
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNNewTodo2apiᚋgraphᚋmodelᚐNewTodo(ctx, tmp)
+		arg0, err = ec.unmarshalNUpdateTodo2apiᚋgraphᚋmodelᚐUpdateTodo(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -832,8 +844,8 @@ func (ec *executionContext) fieldContext_Mutation_createTodo(ctx context.Context
 	return fc, nil
 }
 
-func (ec *executionContext) _Mutation_createTodoLabel(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Mutation_createTodoLabel(ctx, field)
+func (ec *executionContext) _Mutation_updateTodo(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_updateTodo(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -846,7 +858,7 @@ func (ec *executionContext) _Mutation_createTodoLabel(ctx context.Context, field
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().CreateTodoLabel(rctx, fc.Args["input"].(model.NewTodo))
+		return ec.resolvers.Mutation().UpdateTodo(rctx, fc.Args["input"].(model.UpdateTodo))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -858,12 +870,12 @@ func (ec *executionContext) _Mutation_createTodoLabel(ctx context.Context, field
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*models.TodoLabel)
+	res := resTmp.(*models.Todo)
 	fc.Result = res
-	return ec.marshalNTodoLabel2ᚖapiᚋgraphᚋmodelsᚐTodoLabel(ctx, field.Selections, res)
+	return ec.marshalNTodo2ᚖapiᚋgraphᚋmodelsᚐTodo(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Mutation_createTodoLabel(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Mutation_updateTodo(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Mutation",
 		Field:      field,
@@ -872,15 +884,27 @@ func (ec *executionContext) fieldContext_Mutation_createTodoLabel(ctx context.Co
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
 			case "id":
-				return ec.fieldContext_TodoLabel_id(ctx, field)
-			case "todoID":
-				return ec.fieldContext_TodoLabel_todoID(ctx, field)
-			case "labelID":
-				return ec.fieldContext_TodoLabel_labelID(ctx, field)
-			case "label":
-				return ec.fieldContext_TodoLabel_label(ctx, field)
+				return ec.fieldContext_Todo_id(ctx, field)
+			case "title":
+				return ec.fieldContext_Todo_title(ctx, field)
+			case "description":
+				return ec.fieldContext_Todo_description(ctx, field)
+			case "userID":
+				return ec.fieldContext_Todo_userID(ctx, field)
+			case "statusID":
+				return ec.fieldContext_Todo_statusID(ctx, field)
+			case "status":
+				return ec.fieldContext_Todo_status(ctx, field)
+			case "priorityID":
+				return ec.fieldContext_Todo_priorityID(ctx, field)
+			case "priority":
+				return ec.fieldContext_Todo_priority(ctx, field)
+			case "finishedAt":
+				return ec.fieldContext_Todo_finishedAt(ctx, field)
+			case "todoLabels":
+				return ec.fieldContext_Todo_todoLabels(ctx, field)
 			}
-			return nil, fmt.Errorf("no field named %q was found under type TodoLabel", field.Name)
+			return nil, fmt.Errorf("no field named %q was found under type Todo", field.Name)
 		},
 	}
 	defer func() {
@@ -890,7 +914,7 @@ func (ec *executionContext) fieldContext_Mutation_createTodoLabel(ctx context.Co
 		}
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
-	if fc.Args, err = ec.field_Mutation_createTodoLabel_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+	if fc.Args, err = ec.field_Mutation_updateTodo_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return
 	}
@@ -4190,6 +4214,90 @@ func (ec *executionContext) unmarshalInputSortTodo(ctx context.Context, obj inte
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputUpdateTodo(ctx context.Context, obj interface{}) (model.UpdateTodo, error) {
+	var it model.UpdateTodo
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"id", "title", "description", "statusID", "priorityID", "addLabelIDs", "deleteLabelIDs", "finishedAt"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "id":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+			it.ID, err = ec.unmarshalNInt2int(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "title":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("title"))
+			it.Title, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "description":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("description"))
+			it.Description, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "statusID":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("statusID"))
+			it.StatusID, err = ec.unmarshalNInt2int(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "priorityID":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("priorityID"))
+			it.PriorityID, err = ec.unmarshalNInt2int(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "addLabelIDs":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("addLabelIDs"))
+			it.AddLabelIDs, err = ec.unmarshalNInt2ᚕintᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "deleteLabelIDs":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("deleteLabelIDs"))
+			it.DeleteLabelIDs, err = ec.unmarshalNInt2ᚕintᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "finishedAt":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("finishedAt"))
+			it.FinishedAt, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
 // endregion **************************** input.gotpl *****************************
 
 // region    ************************** interface.gotpl ***************************
@@ -4261,10 +4369,10 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
-		case "createTodoLabel":
+		case "updateTodo":
 
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
-				return ec._Mutation_createTodoLabel(ctx, field)
+				return ec._Mutation_updateTodo(ctx, field)
 			})
 
 			if out.Values[i] == graphql.Null {
@@ -5198,10 +5306,6 @@ func (ec *executionContext) marshalNTodo2ᚖapiᚋgraphᚋmodelsᚐTodo(ctx cont
 	return ec._Todo(ctx, sel, v)
 }
 
-func (ec *executionContext) marshalNTodoLabel2apiᚋgraphᚋmodelsᚐTodoLabel(ctx context.Context, sel ast.SelectionSet, v models.TodoLabel) graphql.Marshaler {
-	return ec._TodoLabel(ctx, sel, &v)
-}
-
 func (ec *executionContext) marshalNTodoLabel2ᚕᚖapiᚋgraphᚋmodelsᚐTodoLabelᚄ(ctx context.Context, sel ast.SelectionSet, v []*models.TodoLabel) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
@@ -5254,6 +5358,11 @@ func (ec *executionContext) marshalNTodoLabel2ᚖapiᚋgraphᚋmodelsᚐTodoLabe
 		return graphql.Null
 	}
 	return ec._TodoLabel(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalNUpdateTodo2apiᚋgraphᚋmodelᚐUpdateTodo(ctx context.Context, v interface{}) (model.UpdateTodo, error) {
+	res, err := ec.unmarshalInputUpdateTodo(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) marshalN__Directive2githubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐDirective(ctx context.Context, sel ast.SelectionSet, v introspection.Directive) graphql.Marshaler {
