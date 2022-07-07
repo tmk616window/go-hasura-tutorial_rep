@@ -289,3 +289,21 @@ func (s *GraphTestSuite) TestUpdateTodo() {
 		})
 	})
 }
+
+func (s *GraphTestSuite) TestDeleteTodo() {
+	db := s.resolver.DB
+	s.Run("正常系", func() {
+		todo, _ := createTodoService.CreateTodo(db, model.NewTodo{
+			Title:       "testTitle",
+			Description: "testDescription",
+			UserID:      1,
+			PriorityID:  1,
+			FinishedAt:  "2024-01-02 15:04",
+		})
+		id := todo.ID
+
+		result, _ := s.mutationResolver.DeleteTodo(context.Background(), id)
+
+		assert.Equal(s.T(), result, "削除が完了しました")
+	})
+}
