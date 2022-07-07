@@ -187,6 +187,7 @@ func (s *GraphTestSuite) TestUpdateTodo() {
 		assert.Equal(s.T(), result.ID, id)
 		assert.Equal(s.T(), result.Title, title)
 		assert.Equal(s.T(), result.Description, description)
+		assert.Equal(s.T(), result.ID, todo.ID)
 		assert.Equal(s.T(), result.Title, todo.Title)
 		assert.Equal(s.T(), result.Description, todo.Description)
 	})
