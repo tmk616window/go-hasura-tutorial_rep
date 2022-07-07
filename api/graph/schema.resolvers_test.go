@@ -80,16 +80,20 @@ func (s *GraphTestSuite) TestCreateTodo() {
 			PriorityID:  priorityID,
 			FinishedAt:  finishedTimeString,
 		}
-		result, _ := s.mutationResolver.CreateTodo(context.Background(), object)
+		result, _ := createTodoService.CreateTodo(db, object)
 
 		var todo models.Todo
 		db.Last(&todo)
 
+		assert.Equal(s.T(), result.Title, title)
+		assert.Equal(s.T(), result.Description, description)
+		assert.Equal(s.T(), result.UserID, userID)
+		assert.Equal(s.T(), result.PriorityID, priorityID)
 		assert.Equal(s.T(), result.Title, todo.Title)
 		assert.Equal(s.T(), result.Description, todo.Description)
+		assert.Equal(s.T(), result.UserID, todo.UserID)
 		assert.Equal(s.T(), result.PriorityID, todo.PriorityID)
 		assert.Equal(s.T(), result.StatusID, todo.StatusID)
-
 	})
 
 	s.Run("異常系", func() {
