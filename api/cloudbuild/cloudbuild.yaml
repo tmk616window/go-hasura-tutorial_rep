@@ -1,6 +1,6 @@
 steps:
   - name: 'golang:latest'
-    id: 'do testing'
+    id: 'do testing '
     dir: './api'
     entrypoint: 'go'
     args: 
