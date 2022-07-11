@@ -1,5 +1,5 @@
 steps:
-  - name: 'golang:latest'
+  - name: '--platform=linux/amd64 golang:latest'
     id: 'do testing'
     dir: 'api'
     args:
