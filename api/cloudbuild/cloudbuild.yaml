@@ -1,5 +1,5 @@
 steps:
-  - name: '--platform linux/amd64 golang:latest'
+  - name: 'golang:latest'
     id: 'do testing'
     dir: './api'
   - name: 'gcr.io/cloud-builders/docker'
