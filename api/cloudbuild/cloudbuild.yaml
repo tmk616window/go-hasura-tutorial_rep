@@ -3,9 +3,9 @@ steps:
     id: 'do testing'
     dir: 'api'
     args:
-    - "ls"
     - |
         go mod download \
+        && ls \
         && go test -v ./graph
   - name: 'gcr.io/cloud-builders/docker'
     id: 'do building'
