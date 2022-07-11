@@ -27,6 +27,7 @@ steps:
     - 'deploy'
     - 'go-api-ci'
     - '--image=gcr.io/$PROJECT_ID/sample_app:$SHORT_SHA'
+    - '--region=us-central1'
     - '--project=go-hasura'
 
 
