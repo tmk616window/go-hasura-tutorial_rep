@@ -1,11 +1,10 @@
 steps:
   - name: 'golang:latest'
     id: 'do testing'
-    entrypoint: 'go'
     args:
     - |
-        mod download \
-        && test -v ./graph
+        go mod download \
+        && go test -v ./graph
   - name: 'gcr.io/cloud-builders/docker'
     id: 'do building'
     args:
