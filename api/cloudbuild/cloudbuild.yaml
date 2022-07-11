@@ -2,7 +2,11 @@ steps:
   - name: 'golang:latest'
     id: 'do testing'
     dir: './api'
-    args: ['go', 'test', '-v', './graph']
+    entrypoint: 'go'
+    args: 
+    - 'test' 
+    - '-v'
+    - './graph'
   - name: 'gcr.io/cloud-builders/docker'
     id: 'do building'
     args:
