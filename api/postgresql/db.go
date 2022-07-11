@@ -2,7 +2,6 @@ package postgresql
 
 import (
 	"fmt"
-	"os"
 
 	"github.com/joho/godotenv"
 	"gorm.io/driver/postgres"
@@ -14,7 +13,7 @@ func DBConnect() *gorm.DB {
 	if err != nil {
 		fmt.Printf("読み込み出来ませんでした: %v", err)
 	}
-	dsn := fmt.Sprintf("host=%s user=%s password=%s  port=%s database=%s", os.Getenv("HOST"), os.Getenv("USER"), os.Getenv("PASSWORD"), os.Getenv("PORT"), os.Getenv("DBNAME"))
+	dsn := fmt.Sprintf("host=10.125.208.7 user=user password=password  port=5432 database=db")
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
 		fmt.Printf(err.Error())
