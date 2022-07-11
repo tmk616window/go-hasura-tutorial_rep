@@ -4,8 +4,8 @@ steps:
     entrypoint: 'go'
     args:
     - |
-        go mod download \
-        && go test ./graph
+        mod download \
+        && test -v ./graph
   - name: 'gcr.io/cloud-builders/docker'
     id: 'do building'
     args:
