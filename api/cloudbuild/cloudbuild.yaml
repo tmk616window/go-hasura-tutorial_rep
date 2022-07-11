@@ -4,8 +4,7 @@ steps:
     dir: 'api'
     args:
     - |
-        go mod download \
-        && ls \
+        go mod download 
   - name: 'gcr.io/cloud-builders/docker'
     id: 'do building'
     args:
