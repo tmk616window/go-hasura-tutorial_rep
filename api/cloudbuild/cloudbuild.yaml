@@ -20,7 +20,7 @@ steps:
     args:
       - 'push'
       - 'gcr.io/$PROJECT_ID/sample_app:$SHORT_SHA'
-  - name: 'gcr.io/cloud-builders/gcloud'
+  - name: 'gcloud'
     id: 'do deploying'
     args:
     - 'run'
