@@ -14,7 +14,6 @@ steps:
     - 'gcr.io/$PROJECT_ID/sample_app:$SHORT_SHA'
     - '-f'
     - './Dockerfile'
-    - '.'
   - name: 'gcr.io/cloud-builders/docker'
     id: 'do pushing image'
     args:
