@@ -1,11 +1,11 @@
 steps:
-  - name: 'golang:latest'
-    id: 'do testing'
-    dir: 'graph'
-    args:
-    - |
-        go mod download \
-        && go test -v
+  # - name: 'golang:latest'
+  #   id: 'do testing'
+  #   dir: 'graph'
+  #   args:
+  #   - |
+  #       go mod download \
+  #       && go test -v
   - name: 'gcr.io/cloud-builders/docker'
     id: 'do building'
     args:
