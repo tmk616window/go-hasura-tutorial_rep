@@ -17,7 +17,7 @@ type ValidateTodoType struct {
 }
 
 func ValidateTodo(obj ValidateTodoType) error {
-	if len(obj.Description) > 50 {
+	if len(obj.Title) > 50 {
 		return errors.New("タイトルは50文字以下にしてください")
 	}
 

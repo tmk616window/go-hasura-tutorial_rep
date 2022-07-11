@@ -1,9 +1,5 @@
-# ベースとなるDockerイメージ指定
-FROM golang:latest
-# コンテナ内に作業ディレクトリを作成
-# RUN mkdir /go/src
+FROM --platform=linux/amd64 golang:latest
 WORKDIR /go/api
 
-# GoApp起動
-# CMD ["go","run","main.go"]
 ADD . /go/api
+CMD ["go","run","server.go"]

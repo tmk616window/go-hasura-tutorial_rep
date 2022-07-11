@@ -107,6 +107,7 @@ func (r *queryResolver) GqlgenTodos(ctx context.Context, sortInput *model.SortTo
 	var todos []*models.Todo
 	db := r.Resolver.DB
 
+	db = db.Preload("TodoLabels")
 	if searchInput != nil {
 		db.Where(searchInput.Column+" = ?", searchInput.Value)
 	} else if sortInput != nil {
