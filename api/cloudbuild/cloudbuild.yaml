@@ -1,6 +1,7 @@
 steps:
   - name: 'golang:latest'
     id: 'do testing'
+    dir: 'api'
     args:
     - |
         go mod download \
